@@ -11,29 +11,36 @@
           testcase   : CLHHelper.getFullPath('path-option', aCommandLine, '')
        };
    };
+   CommandLineHandler.prototype.helpInfo = CLHHelper.formatHelpInfo({
+     '-boolean-option' : 'It is a boolean option.',
+     '-path-option <path>' : 'It is a path option.'
+   });
 
  lisence: The MIT License, Copyright (c) 2010 ClearCode Inc.
    http://www.clear-code.com/repos/svn/js-codemodules/license.txt
  original:
    http://www.clear-code.com/repos/svn/js-codemodules/CLHHelper.jsm
+   http://www.clear-code.com/repos/svn/js-codemodules/CLHHelper.test.js
 */
 
 const EXPORTED_SYMBOLS = ['CLHHelper'];
 
-// If namespace.jsm is available, export symbols to the shared namespace.
-// See: http://www.cozmixng.org/repos/piro/fx3-compatibility-lib/trunk/namespace.jsm
-var namespace;
-try {
-	let ns = {};
-	Components.utils.import('resource://my-modules/namespace.jsm', ns);
-	namespace = ns.getNamespaceFor('clear-code.com');
-}
-catch(e) {
-	namespace = {};
+// var namespace;
+if (typeof namespace == 'undefined') {
+	// If namespace.jsm is available, export symbols to the shared namespace.
+	// See: http://www.cozmixng.org/repos/piro/fx3-compatibility-lib/trunk/namespace.jsm
+	try {
+		let ns = {};
+		Components.utils.import('resource://my-modules/namespace.jsm', ns);
+		namespace = ns.getNamespaceFor('clear-code.com');
+	}
+	catch(e) {
+		namespace = {};
+	}
 }
 
 (function() {
-	const currentRevision = 1;
+	const currentRevision = 2;
 
 	var loadedRevision = 'CLHHelper' in namespace ?
 			namespace.CLHHelper.revision :
@@ -52,7 +59,8 @@ catch(e) {
 		{
 			if (aDefaultValue === void(0)) aDefaultValue = '';
 			try {
-				return aCommandLine.handleFlagWithParam(aOption, false);
+				var value = aCommandLine.handleFlagWithParam(aOption.replace(/^-/, ''), false);
+				return value === null ? aDefaultValue : value ;
 			}
 			catch(e) {
 			}
@@ -62,9 +70,8 @@ catch(e) {
 		getBooleanValue : function(aOption, aCommandLine) 
 		{
 			try {
-				if (aCommandLine.handleFlag(aOption, false)) {
+				if (aCommandLine.handleFlag(aOption.replace(/^-/, ''), false))
 					return true;
-				}
 			}
 			catch(e) {
 			}
@@ -76,13 +83,13 @@ catch(e) {
 			if (!aDefaultValue) aDefaultValue = 0;
 			var value = this._getValue(aOption, aCommandLine, aDefaultValue);
 			if (!value) return aDefaultValue;
-			value = parseInt(value);
+			value = Number(value);
 			return isNaN(value) ? aDefaultValue : value ;
 		},
  
 		getStringValue : function(aOption, aCommandLine, aDefaultValue) 
 		{
-			retrun this._getValue(aOption, aCommandLine, aDefaultValue);
+			return this._getValue(aOption, aCommandLine, aDefaultValue);
 		},
 
 		getFullPath : function(aOption, aCommandLine, aDefaultValue) 
@@ -98,8 +105,45 @@ catch(e) {
 				value = aCommandLine.resolveURI(value);
 				return value.spec;
 			}
-		}
+		},
 
+		formatHelpInfo : function(aDescriptions)
+		{
+			var lines = [];
+			var indent = '                       ';
+			for (var i in aDescriptions)
+			{
+				let option = (i.indexOf('-') == 0) ? i : '-' + i ;
+				let description = aDescriptions[i].replace(/^\s+|\s+$/g, '');
+
+				option = '  '+option;
+				if (option.length > 22) {
+					lines.push(option);
+					description = indent + description;
+				}
+				else {
+					while (option.length < 23)
+					{
+						option += ' ';
+					}
+					description = option + description;
+				}
+
+				while (true)
+				{
+					lines.push(description.substring(0, 75).replace(/\s+$/, ''));
+					if (description.length < 75)
+						break;
+					description = indent + description.substring(75).replace(/^\s+/, '');
+				}
+			}
+			return this._UCS2ToUTF8(lines.join('\n'))+'\n';
+		},
+
+		_UCS2ToUTF8 : function(aInput)
+		{
+			return unescape(encodeURIComponent(aInput));
+		}
 	};
 })();
 
