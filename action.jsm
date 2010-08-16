@@ -1,20 +1,23 @@
-/* 
- User Action Emulator for Firefox 3.5 or later
-
- Usage:
-   Components.utils.import('resource://my-modules/action.jsm');
-   action.clickOn(someDOMElement);
-   // See: http://www.clear-code.com/software/uxu/helpers.html.en#actions
-   // (ja: http://www.clear-code.com/software/uxu/helpers.html#actions )
-
- lisence: The MIT License, Copyright (c) 2010 ClearCode Inc.
-   http://www.clear-code.com/repos/svn/js-codemodules/license.txt
- original:
-   http://www.clear-code.com/repos/svn/js-codemodules/action.jsm
-   http://www.clear-code.com/repos/svn/js-codemodules/action_tests/
-*/
-
-if (typeof window == 'undefined')
+/**
+ * @fileOverview User Action Emulator for Firefox 3.5 or later 
+ * @author       ClearCode Inc.
+ * @version      1.0
+ *
+ * @example
+ *   Components.utils.import('resource://my-modules/action.jsm');
+ *   action.clickOn(someDOMElement);
+ *   // See: http://www.clear-code.com/software/uxu/helpers.html.en#actions
+ *   // (ja: http://www.clear-code.com/software/uxu/helpers.html#actions )
+ *
+ * @lisence
+ *   The MIT License, Copyright (c) 2010 ClearCode Inc.
+ *   http://www.clear-code.com/repos/svn/js-codemodules/license.txt
+ * @url
+ *   http://www.clear-code.com/repos/svn/js-codemodules/action.jsm
+ *   http://www.clear-code.com/repos/svn/js-codemodules/action_tests/
+ */
+ 
+if (typeof window == 'undefined') 
 	this.EXPORTED_SYMBOLS = ['action'];
 
 // This depends on boxObject.js
@@ -34,7 +37,8 @@ if (typeof namespace == 'undefined') {
 		namespace = (typeof window != 'undefined' ? window : null ) || {};
 	}
 }
-
+ 
+var action; 
 (function() {
 	const currentRevision = 1;
 
@@ -42,37 +46,44 @@ if (typeof namespace == 'undefined') {
 			namespace.action.revision :
 			0 ;
 	if (loadedRevision && loadedRevision > currentRevision) {
+		action = namespace.action;
 		return;
 	}
 
 	const Cc = Components.classes;
 	const Ci = Components.interfaces;
- 
-	namespace.action = { 
-		revision : currentRevision,
 	
-		get Prefs() 
+	/**
+	 * @class The action service, provides features to emulate user operations.
+	 */
+	action = { 
+	
+		/** @private */
+		revision : currentRevision, 
+ 
+		get _Prefs() 
 		{
-			delete this.Prefs;
-			return this.Prefs = Cc['@mozilla.org/preferences;1']
+			delete this._Prefs;
+			return this._Prefs = Cc['@mozilla.org/preferences;1']
 									.getService(Ci.nsIPrefBranch)
 									.QueryInterface(Ci.nsIPrefBranch2);
 		},
  
-		get WindowMediator() 
+		get _WindowMediator() 
 		{
-			delete this.WindowMediator;
-			return this.WindowMediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
+			delete this._WindowMediator;
+			return this._WindowMediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
 		},
  
+		/** @private */
 		getBoxObjectFor : function(aNode) 
 		{
 			return ('getBoxObjectFor' in aNode.ownerDocument) ?
 					aNode.ownerDocument.getBoxObjectFor(aNode) :
-					this.boxObject.getBoxObjectFor(aNode) ;
+					this._boxObject.getBoxObjectFor(aNode) ;
 		},
 	
-		get boxObject() 
+		get _boxObject() 
 		{
 			delete this.boxObject;
 			var ns = {};
@@ -82,16 +93,31 @@ if (typeof namespace == 'undefined') {
   
 /* zoom */ 
 	
+		/**
+		 * Returns whether the full zoom feature is enabled or not.
+		 *
+		 * @return {Boolean}
+		 *   Availability of full zoom.
+		 */
 		isFullZoom : function() 
 		{
 			try {
-				return this.Prefs.getBoolPref('browser.zoom.full');
+				return this._Prefs.getBoolPref('browser.zoom.full');
 			}
 			catch(e) {
 			}
 			return false;
 		},
  
+		/**
+		 * Returns the factor of full zoom.
+		 *
+		 * @param {nsIDOMWindow} aWindow
+		 *   The frame you want to know the zoom factor.
+		 *
+		 * @return {number}
+		 *   The zoom factor of the frame. 0 means 0%, 1 means 100%.
+		 */
 		getZoom : function(aWindow) 
 		{
 			if (!aWindow ||
@@ -187,19 +213,56 @@ if (typeof namespace == 'undefined') {
   
 // click on element 
 	
+		/**
+		 * Emulates a single left click on a element.
+		 *
+		 * @see action.leftClickOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>. Aliases are also available: <code>alt</code>,
+		 *   <code>ctrl</code>, <code>control</code>, <code>meta</code>,
+		 *   <code>meta</code>, <code>command</code>, and <code>shift</code>.
+		 */
 		clickOn : function() 
 		{
 			var options = this._getMouseOptionsFor('click', 0, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// leftClickOn
+		/** @see action.clickOn */
+		leftClickOn : function() { return this.clickOn.apply(this, arguments); },
  
+		/**
+		 * Emulates a single middle click on a element.
+		 *
+		 * @see action.clickOn
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		middleClickOn : function() 
 		{
 			var options = this._getMouseOptionsFor('click', 1, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
  
+		/**
+		 * Emulates a single right click on a element.
+		 *
+		 * @see action.clickOn
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		rightClickOn : function() 
 		{
 			var options = this._getMouseOptionsFor('click', 2, arguments);
@@ -208,72 +271,229 @@ if (typeof namespace == 'undefined') {
   
 // dblclick on element 
 	
+		/**
+		 * Emulates a double left click on a element.
+		 *
+		 * @see action.clickOn
+		 * @see action.doubleclickOn (alias)
+		 * @see action.dblClickOn (alias)
+		 * @see action.dblclickOn (alias)
+		 * @see action.leftDoubleclickOn (alias)
+		 * @see action.leftDoubleClickOn (alias)
+		 * @see action.leftDblClickOn (alias)
+		 * @see action.leftDblclickOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		doubleClickOn : function() 
 		{
 			var options = this._getMouseOptionsFor('dblclick', 0, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// doubleclickOn, dblClickOn, dblclickOn,
-		// leftDoubleclickOn, leftDoubleClickOn,
-		// leftDblClickOn, leftDblclickOn
+		/** @see action.doubleClickOn */
+		doubleclickOn : function() { return this.doubleClickOn.apply(this, arguments); },
+		/** @see action.doubleClickOn */
+		dblClickOn : function() { return this.doubleClickOn.apply(this, arguments); },
+		/** @see action.doubleClickOn */
+		dblclickOn : function() { return this.doubleClickOn.apply(this, arguments); },
+		/** @see action.doubleClickOn */
+		leftDoubleclickOn : function() { return this.doubleClickOn.apply(this, arguments); },
+		/** @see action.doubleClickOn */
+		leftDoubleClickOn : function() { return this.doubleClickOn.apply(this, arguments); },
+		/** @see action.doubleClickOn */
+		leftDblClickOn : function() { return this.doubleClickOn.apply(this, arguments); },
+		/** @see action.doubleClickOn */
+		leftDblclickOn : function() { return this.doubleClickOn.apply(this, arguments); },
  
+		/**
+		 * Emulates a double middle click on a element.
+		 *
+		 * @see action.clickOn
+		 * @see action.middleDoubleclickOn (alias)
+		 * @see action.middleDblClickOn (alias)
+		 * @see action.middleDblclickOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		middleDoubleClickOn : function() 
 		{
 			var options = this._getMouseOptionsFor('dblclick', 1, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// middleDoubleclickOn, middleDblClickOn, middleDblclickOn
+		/** @see action.middleDoubleClickOn */
+		middleDoubleclickOn : function() { return this.middleDoubleClickOn.apply(this, arguments); },
+		/** @see action.middleDoubleClickOn */
+		middleDblClickOn : function() { return this.middleDoubleClickOn.apply(this, arguments); },
+		/** @see action.middleDoubleClickOn */
+		middleDblclickOn : function() { return this.middleDoubleClickOn.apply(this, arguments); },
  
+		/**
+		 * Emulates a double right click on a element.
+		 *
+		 * @see action.clickOn
+		 * @see action.rightDoubleclickOn (alias)
+		 * @see action.rightDblClickOn (alias)
+		 * @see action.rightDblclickOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		rightDoubleClickOn : function() 
 		{
 			var options = this._getMouseOptionsFor('dblclick', 2, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// rightDoubleclickOn, rightDblClickOn, rightDblclickOn
+		/** @see action.rightDoubleClickOn */
+		rightDoubleclickOn : function() { return this.rightDoubleClickOn.apply(this, arguments); },
+		/** @see action.rightDoubleClickOn */
+		rightDblClickOn : function() { return this.rightDoubleClickOn.apply(this, arguments); },
+		/** @see action.rightDoubleClickOn */
+		rightDblclickOn : function() { return this.rightDoubleClickOn.apply(this, arguments); },
   
 // mousedown/mouseup on element 
 	
+		/**
+		 * Emulates a single left mouse down on a element.
+		 *
+		 * @see action.clickOn
+		 * @see action.mousedownOn (alias)
+		 * @see action.leftMouseDownOn (alias)
+		 * @see action.leftMousedownOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		mouseDownOn : function() 
 		{
 			var options = this._getMouseOptionsFor('mousedown', 0, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// mousedownOn, leftMouseDownOn, leftMousedownOn
+		/** @see action.mouseDownOn */
+		mousedownOn : function() { return this.mouseDownOn.apply(this, arguments); },
+		/** @see action.mouseDownOn */
+		leftMouseDownOn : function() { return this.mouseDownOn.apply(this, arguments); },
+		/** @see action.mouseDownOn */
+		leftMousedownOn : function() { return this.mouseDownOn.apply(this, arguments); },
  
+		/**
+		 * Emulates a single middle mouse down on a element.
+		 *
+		 * @see action.clickOn
+		 * @see action.middleMousedownOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		middleMouseDownOn : function() 
 		{
 			var options = this._getMouseOptionsFor('mousedown', 1, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// middleMousedownOn
+		/** @see action.middleMouseDownOn */
+		middleMousedownOn : function() { return this.middleMouseDownOn.apply(this, arguments); },
  
+		/**
+		 * Emulates a single right mouse down on a element.
+		 *
+		 * @see action.clickOn
+		 * @see action.rightMousedownOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		rightMouseDownOn : function() 
 		{
 			var options = this._getMouseOptionsFor('mousedown', 2, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// rightMousedownOn
+		/** @see action.rightMouseDownOn */
+		rightMousedownOn : function() { return this.rightMouseDownOn.apply(this, arguments); },
  
+		/**
+		 * Emulates a single left mouse up on a element.
+		 *
+		 * @see action.clickOn
+		 * @see action.mouseupOn (alias)
+		 * @see action.leftMouseUpOn (alias)
+		 * @see action.leftMouseupOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		mouseUpOn : function() 
 		{
 			var options = this._getMouseOptionsFor('mouseup', 0, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// mouseupOn, leftMouseUpOn, leftMouseupOn
+		/** @see action.mouseUpOn */
+		mouseupOn : function() { return this.mouseUpOn.apply(this, arguments); },
+		/** @see action.mouseUpOn */
+		leftMouseUpOn : function() { return this.mouseUpOn.apply(this, arguments); },
+		/** @see action.mouseUpOn */
+		leftMouseupOn : function() { return this.mouseUpOn.apply(this, arguments); },
  
+		/**
+		 * Emulates a single middle mouse up on a element.
+		 *
+		 * @see action.clickOn
+		 * @see action.middleMouseupOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		middleMouseUpOn : function() 
 		{
 			var options = this._getMouseOptionsFor('mouseup', 1, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// middleMouseupOn
+		/** @see action.middleMouseUpOn */
+		middleMouseupOn : function() { return this.middleMouseUpOn.apply(this, arguments); },
  
+		/**
+		 * Emulates a single right mouse up on a element.
+		 *
+		 * @see action.clickOn
+		 * @see action.rightMouseupOn (alias)
+		 *
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		rightMouseUpOn : function() 
 		{
 			var options = this._getMouseOptionsFor('mouseup', 2, arguments);
 			this.fireMouseEventOnElement(options.element, options);
 		},
-		// rightMouseupOn
+		/** @see action.rightMouseUpOn */
+		rightMouseupOn : function() { return this.rightMouseUpOn.apply(this, arguments); },
   
 // click at position 
 	
@@ -600,6 +820,7 @@ if (typeof namespace == 'undefined') {
     
 // drag and drop: under construction 
 	
+		/** @private */
 		dragStart : function(aWindow, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -607,6 +828,7 @@ if (typeof namespace == 'undefined') {
 			this.fireMouseEvent(aWindow, aOptions);
 		},
 	
+		/** @private */
 		dragStartOnElement : function(aElement, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -614,6 +836,7 @@ if (typeof namespace == 'undefined') {
 			this.fireMouseEventOnElement(aElement, aOptions);
 		},
   
+		/** @private */
 		dragEnd : function(aWindow, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -621,6 +844,7 @@ if (typeof namespace == 'undefined') {
 			this.fireMouseEvent(aWindow, aOptions);
 		},
 	
+		/** @private */
 		dragEndOnElement : function(aElement, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -628,6 +852,7 @@ if (typeof namespace == 'undefined') {
 			this.fireMouseEventOnElement(aElement, aOptions);
 		},
   
+		/** @private */
 		dragMove : function(aWindow, aFromX, aFromY, aToX, aToY, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -683,6 +908,7 @@ if (typeof namespace == 'undefined') {
 			return dragEndFlag;
 		},
 	
+		/** @private */
 		dragMove : function(aFromElement, aToElement, aOptions) 
 		{
 			if (aFromElement.nodeType != aFromElement.ELEMENT_NODE)
@@ -704,6 +930,7 @@ if (typeof namespace == 'undefined') {
 				);
 		},
   
+		/** @private */
 		dragAndDrop : function(aWindow, aFromX, aFromY, aToX, aToY, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -726,6 +953,7 @@ if (typeof namespace == 'undefined') {
 			return dragEndFlag;
 		},
 	
+		/** @private */
 		dragAndDropOnElement : function(aFromElement, aToElement, aOptions) 
 		{
 			if (aFromElement.nodeType != aFromElement.ELEMENT_NODE)
@@ -1180,14 +1408,14 @@ if (typeof namespace == 'undefined') {
  
 // lower level API 
 	
-		withIMECharacters : '\u3040-\uA4CF\uF900-\uFAFF', 
+		_withIMECharacters : '\u3040-\uA4CF\uF900-\uFAFF', 
 		get _inputArrayPattern() {
 			delete this._inputArrayPattern;
-			return this._inputArrayPattern = new RegExp('[^'+this.withIMECharacters+']|['+this.withIMECharacters+']+', 'g');
+			return this._inputArrayPattern = new RegExp('[^'+this._withIMECharacters+']|['+this._withIMECharacters+']+', 'g');
 		},
 		get _directInputPattern() {
 			delete this._directInputPattern;
-			return this._directInputPattern = new RegExp('[^'+this.withIMECharacters+']');
+			return this._directInputPattern = new RegExp('[^'+this._withIMECharacters+']');
 		},
  
 		inputTextToField : function(aElement, aValue, aAppend, aDontFireKeyEvents) 
@@ -1242,7 +1470,7 @@ if (typeof namespace == 'undefined') {
 	
 		_getWindowFromScreenPoint : function(aScreenX, aScreenY) 
 		{
-			var windows = this.WindowMediator.getZOrderDOMWindowEnumerator(null, true);
+			var windows = this._WindowMediator.getZOrderDOMWindowEnumerator(null, true);
 			if (windows.hasMoreElements()) {
 				while (windows.hasMoreElements())
 				{
@@ -1260,7 +1488,7 @@ if (typeof namespace == 'undefined') {
 			// By the bug 156333, we cannot find windows by their Z order on Linux.
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=156333
 			// This is alternative way for failover.
-			windows = this.WindowMediator.getEnumerator(null);
+			windows = this._WindowMediator.getEnumerator(null);
 			var array = [];
 			while (windows.hasMoreElements())
 			{
@@ -1303,6 +1531,22 @@ if (typeof namespace == 'undefined') {
 			return [w, x, y];
 		},
  
+		/**
+		  * Finds a DOM element from specified coordinates on the screen.
+		  *
+		  * @param {number} aScreenX
+		  *   The X coordinate on the screen.
+		  * @param {number} aScreenY
+		  *   The Y coordinate on the screen.
+		  * @param {nsIDOMWindow=} aRootFrame (optional)
+		  *   The root frame (maybe a chrome window) which you want to find
+		  *   an element from. If you didn't specify this option, this finds
+		  *   an element from the topmost window on the specified coordinates.
+		  *
+		  * @return {?nsIDOMElement}
+		  *   The found element. If there is no DOM element, null will be
+		  *   returned.
+		  */
 		getElementFromScreenPoint : function() 
 		{
 			var [aFrame, aScreenX, aScreenY] = this._getFrameAndScreenPointFromArguments(arguments);
@@ -1390,6 +1634,25 @@ if (typeof namespace == 'undefined') {
 			return Ci.nsIDOMNodeFilter.FILTER_ACCEPT;
 		},
   
+		/**
+		  * Finds a frame from specified coordinates on the screen. You can
+		  * specify aRootFrame before coordinates as:
+		  * <code>getFrameFromScreenPoint(aRootFrame, aScreenX, aScreenY)</code>.
+		  *
+		  * @see action.getWindowFromScreenPoint (alias, deprecated)
+		  *
+		  * @param {number} aScreenX
+		  *   The X coordinate on the screen.
+		  * @param {number} aScreenY
+		  *   The Y coordinate on the screen.
+		  * @param {nsIDOMWindow=} aRootFrame (optional)
+		  *   The root frame (maybe a chrome window) which you want to find
+		  *   a sub frame from. If you didn't specify this option, this finds
+		  *   a frame from the topmost window on the specified coordinates.
+		  *
+		  * @return {?nsIDOMWindow}
+		  *   The found frame. If there is no frame, null will be returned.
+		  */
 		getFrameFromScreenPoint : function() 
 		{
 			var [aFrame, aScreenX, aScreenY] = this._getFrameAndScreenPointFromArguments(arguments);
@@ -1400,8 +1663,15 @@ if (typeof namespace == 'undefined') {
 			var elem = this.getElementFromScreenPoint(aFrame, aScreenX, aScreenY);
 			return elem ? elem.ownerDocument.defaultView : null ;
 		},
+		/**
+		 * @deprecated Use action.getFrameFromScreenPoint().
+		 * @see action.getFrameFromScreenPoint
+		 */
+		getWindowFromScreenPoint : function()
+		{
+			return this.getFrameFromScreenPoint.apply(this, arguments);
+		},
 	
-
   
 		_getClientPointFromScreenPoint : function(aFrame, aScreenX, aScreenY) 
 		{
@@ -1479,6 +1749,12 @@ if (typeof namespace == 'undefined') {
 				(aNode.document || aNode.ownerDocument || aNode );
 		},
   
+		/**
+		  * Exports features of this class to the specified namespace.
+		  *
+		  * @param {Object} aNamespace
+		  *   The object which methods are exported to.
+		  */
 		export : function(aNamespace) 
 		{
 			if (!aNamespace)
@@ -1502,7 +1778,7 @@ if (typeof namespace == 'undefined') {
 		_exportedSymbols : [],
 		_exportedSymbolsAliases : {},
  
-		init : function() 
+		_init : function() 
 		{
 			this._exportedSymbols = [];
 			this._exportedSymbolsAliases = {};
@@ -1623,9 +1899,8 @@ getFrameFromScreenPoint
 		}
  
 	}; 
-	namespace.action.init();
+	action._init();
+	namespace.action = action;
   
 })(); 
-
-var action = namespace.action;
- 
+  
