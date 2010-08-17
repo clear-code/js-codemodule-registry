@@ -938,7 +938,7 @@ var action;
 			var utils = this._getWindowUtils(aElement.ownerDocument.defaultView);
 			if (!aOptions) aOptions = { type : 'click' };
 			if (!this._getOwnerPopup(aElement)) {
-				this._updateMouseEventOptionsOnElement(aOptions, aElement);
+				aOptions = this._calculateCoordinatesFromElement(aOptions, aElement);
 				this.fireMouseEvent(aElement.ownerDocument.defaultView, aOptions);
 				return;
 			}
@@ -983,6 +983,17 @@ var action;
 				this._emulateClickOnXULElement(aElement, aOptions);
 		},
 	
+		/**
+		 * Creates a DOM mouse event from the given element and options.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   A DOM element which is used to create new event.
+		 * @param {Object=} aOptions (optional)
+		 *   A hash, options for fireMouseEvent and fireMouseEventOnElement.
+		 *
+		 * @return {nsIDOMElement}
+		 *   A DOM mouse event.
+		 */
 		_createMouseEventOnElement : function(aElement, aOptions) 
 		{
 			if (!aElement ||
@@ -991,7 +1002,7 @@ var action;
 
 			if (!aOptions) aOptions = {};
 			if (!aElement) return null;
-			this._updateMouseEventOptionsOnElement(aOptions, aElement);
+			aOptions = this._calculateCoordinatesFromElement(aOptions, aElement);
 
 			var event = aElement.ownerDocument.createEvent('MouseEvents');
 			event.initMouseEvent(
@@ -1014,7 +1025,25 @@ var action;
 			return event;
 		},
  
-		_updateMouseEventOptionsOnElement : function(aOptions, aElement) 
+		/**
+		 * Calculates coordinates on the screen for new DOM mouse event from
+		 * a DOM element. "x", "y", "screenX" and "screenY" are set to the
+		 * center of the given element. If the element is partially visible,
+		 * then coordinates are calculated as the center of the visible area.
+		 *
+		 * @param {?Object} aOptions (optional)
+		 *   A hash, options for fireMouseEventOnElement.
+		 * @param {nsIDOMElement} aElement
+		 *   A DOM element which is used to calculate coordinates.
+		 *
+		 * @return {{x: number,
+		 *           y: number,
+		 *           screenX: number,
+		 *           screenY: number}}
+		 *   A hash, options for fireMouseEventOnElement. All of properties
+		 *   except x, y, screenX and screenY are inherited from the given hash.
+		 */
+		_calculateCoordinatesFromElement : function(aOptions, aElement) 
 		{
 			if (aElement.nodeType != aElement.ELEMENT_NODE) aElement = aElement.parentNode;
 			if (!aOptions) aOptions = {};
@@ -1066,6 +1095,8 @@ var action;
 
 			aOptions.x = aOptions.screenX - rootBox.screenX - frame.scrollX;
 			aOptions.y = aOptions.screenY - rootBox.screenY - frame.scrollY;
+
+			return aOptions;
 		},
     
 // drag and drop: under construction 
