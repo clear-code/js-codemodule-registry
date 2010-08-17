@@ -112,18 +112,18 @@ var action;
 		/**
 		 * Returns the factor of full zoom.
 		 *
-		 * @param {nsIDOMWindow} aWindow
+		 * @param {nsIDOMWindow} aFrame
 		 *   The frame you want to know the zoom factor.
 		 *
 		 * @return {number}
 		 *   The zoom factor of the frame. 0 means 0%, 1 means 100%.
 		 */
-		getZoom : function(aWindow) 
+		getZoom : function(aFrame) 
 		{
-			if (!aWindow ||
-				!(aWindow instanceof Ci.nsIDOMWindow))
-				throw new Error('action.getZoom::['+aWindow+'] is not a frame!');
-			var markupDocumentViewer = aWindow.top
+			if (!aFrame ||
+				!(aFrame instanceof Ci.nsIDOMWindow))
+				throw new Error('action.getZoom::['+aFrame+'] is not a frame!');
+			var markupDocumentViewer = aFrame.top
 					.QueryInterface(Ci.nsIInterfaceRequestor)
 					.getInterface(Ci.nsIWebNavigation)
 					.QueryInterface(Ci.nsIDocShell)
@@ -136,6 +136,30 @@ var action;
 	
 // utils 
 	
+		/**
+		 * Returns parameters as a normalized hash.
+		 *
+		 * @param {string} aEventType
+		 *   The event type of the mouse event.
+		 * @param {number} aButton
+		 *   The button related to the mouse event. 0=left, 1=middle, 2=right.
+		 * @param {Array=} aOptions (optional)
+		 *   The root frame (maybe a chrome window) which you want to find
+		 *   the target frame from. If you didn't specify this option, this
+		 *   finds frames from the topmost window on the specified coordinates.
+		 *
+		 * @return {{type: string,
+		 *           button: number,
+		 *           altKey: boolean,
+		 *           ctrlKey: boolean,
+		 *           metaKey: boolean,
+		 *           shiftKey: boolean,
+		 *           x: number,
+		 *           y: number,
+		 *           window: ?nsIDOMWindow,
+		 *           element: ?nsIDOMElement}}
+		 *   Options normalized to a hash.
+		 */
 		_getMouseOptionsFor : function(aType, aButton, aArguments) 
 		{
 			var options = this._getMouseOptionsFromArguments(aArguments);
@@ -144,8 +168,8 @@ var action;
 				button : aButton,
 				altKey : options.modifiers.altKey,
 				ctrlKey : options.modifiers.ctrlKey,
-				shiftKey : options.modifiers.shiftKey,
-				metaKey : options.modifiers.metaKey
+				metaKey : options.modifiers.metaKey,
+				shiftKey : options.modifiers.shiftKey
 			};
 			if (options.element) {
 				returnOptions.element = options.element;
@@ -158,6 +182,40 @@ var action;
 			return returnOptions;
 		},
  
+		/**
+		 * Extracts parameters from an arguments array and returns them as
+		 * a normalized hash. Parameters can be in random order.
+		 *
+		 * @param {number=} aScreenX (optional)
+		 *   The X coordinate on the screen.
+		 * @param {number=} aScreenY (optional)
+		 *   The Y coordinate on the screen.
+		 * @param {nsIDOMWindow=} aRootFrame (optional)
+		 *   The root frame (maybe a chrome window) which you want to find
+		 *   the target frame from. If you didn't specify this option, this
+		 *   finds frames from the topmost window on the specified coordinates.
+		 * @param {nsIDOMElement=} aTargetElement (optional)
+		 *   The target element which you want to send generated event.
+		 * @param {{alt: boolean, altKey: boolean,
+		 *          ctrl: boolean, ctrlKey: boolean,
+		 *          control: boolean, controlKey: boolean,
+		 *          meta: boolean, metaKey: boolean,
+		 *          cmd: boolean, cmdKey: boolean,
+		 *          command: boolean, commandKey: boolean,
+		 *          shift: boolean, shiftKey: boolean}=} (optional)
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
+		 *
+		 * @return {{x: number,
+		 *           y: number,
+		 *           window: ?nsIDOMWindow,
+		 *           element: ?nsIDOMElement,
+		 *           modifiers: {altKey: boolean,
+		 *                       ctrlKey: boolean,
+		 *                       metaKey: boolean,
+		 *                       shiftKey: boolean}}}
+		 *   Options normalized to a hash.
+		 */
 		_getMouseOptionsFromArguments : function(aArguments) 
 		{
 			var modifierNames = 'alt,ctrl,control,shift,meta,cmd,command'
@@ -214,18 +272,19 @@ var action;
 // click on element 
 	
 		/**
-		 * Emulates a single left click on a element.
+		 * Emulates a single left click on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.leftClickOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
 		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>. Aliases are also available: <code>alt</code>,
-		 *   <code>ctrl</code>, <code>control</code>, <code>meta</code>,
-		 *   <code>meta</code>, <code>command</code>, and <code>shift</code>.
+		 *   <code>false</code>.
 		 */
 		clickOn : function() 
 		{
@@ -236,15 +295,19 @@ var action;
 		leftClickOn : function() { return this.clickOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single middle click on a element.
+		 * Emulates a single middle click on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.clickOn
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		middleClickOn : function() 
 		{
@@ -253,15 +316,19 @@ var action;
 		},
  
 		/**
-		 * Emulates a single right click on a element.
+		 * Emulates a single right click on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.clickOn
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		rightClickOn : function() 
 		{
@@ -272,7 +339,8 @@ var action;
 // dblclick on element 
 	
 		/**
-		 * Emulates a double left click on a element.
+		 * Emulates a double left click on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.clickOn
 		 * @see action.doubleclickOn (alias)
@@ -283,11 +351,14 @@ var action;
 		 * @see action.leftDblClickOn (alias)
 		 * @see action.leftDblclickOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		doubleClickOn : function() 
 		{
@@ -310,18 +381,22 @@ var action;
 		leftDblclickOn : function() { return this.doubleClickOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a double middle click on a element.
+		 * Emulates a double middle click on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.clickOn
 		 * @see action.middleDoubleclickOn (alias)
 		 * @see action.middleDblClickOn (alias)
 		 * @see action.middleDblclickOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		middleDoubleClickOn : function() 
 		{
@@ -336,18 +411,22 @@ var action;
 		middleDblclickOn : function() { return this.middleDoubleClickOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a double right click on a element.
+		 * Emulates a double right click on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.clickOn
 		 * @see action.rightDoubleclickOn (alias)
 		 * @see action.rightDblClickOn (alias)
 		 * @see action.rightDblclickOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		rightDoubleClickOn : function() 
 		{
@@ -364,18 +443,22 @@ var action;
 // mousedown/mouseup on element 
 	
 		/**
-		 * Emulates a single left mouse down on a element.
+		 * Emulates a single left mouse down on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.clickOn
 		 * @see action.mousedownOn (alias)
 		 * @see action.leftMouseDownOn (alias)
 		 * @see action.leftMousedownOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		mouseDownOn : function() 
 		{
@@ -390,16 +473,20 @@ var action;
 		leftMousedownOn : function() { return this.mouseDownOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single middle mouse down on a element.
+		 * Emulates a single middle mouse down on a element. Parameters can be
+		 * in random order.
 		 *
 		 * @see action.clickOn
 		 * @see action.middleMousedownOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		middleMouseDownOn : function() 
 		{
@@ -410,16 +497,20 @@ var action;
 		middleMousedownOn : function() { return this.middleMouseDownOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single right mouse down on a element.
+		 * Emulates a single right mouse down on a element. Parameters can be
+		 * in random order.
 		 *
 		 * @see action.clickOn
 		 * @see action.rightMousedownOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		rightMouseDownOn : function() 
 		{
@@ -430,18 +521,22 @@ var action;
 		rightMousedownOn : function() { return this.rightMouseDownOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single left mouse up on a element.
+		 * Emulates a single left mouse up on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.clickOn
 		 * @see action.mouseupOn (alias)
 		 * @see action.leftMouseUpOn (alias)
 		 * @see action.leftMouseupOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		mouseUpOn : function() 
 		{
@@ -456,16 +551,20 @@ var action;
 		leftMouseupOn : function() { return this.mouseUpOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single middle mouse up on a element.
+		 * Emulates a single middle mouse up on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.clickOn
 		 * @see action.middleMouseupOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		middleMouseUpOn : function() 
 		{
@@ -476,16 +575,20 @@ var action;
 		middleMouseupOn : function() { return this.middleMouseUpOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single right mouse up on a element.
+		 * Emulates a single right mouse up on a element. Parameters can be in
+		 * random order.
 		 *
 		 * @see action.clickOn
 		 * @see action.rightMouseupOn (alias)
 		 *
+		 * @param {nsIDOMElement} aTarget
+		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		rightMouseUpOn : function() 
 		{
@@ -1635,24 +1738,24 @@ var action;
 		},
   
 		/**
-		  * Finds a frame from specified coordinates on the screen. You can
-		  * specify aRootFrame before coordinates as:
-		  * <code>getFrameFromScreenPoint(aRootFrame, aScreenX, aScreenY)</code>.
-		  *
-		  * @see action.getWindowFromScreenPoint (alias, deprecated)
-		  *
-		  * @param {number} aScreenX
-		  *   The X coordinate on the screen.
-		  * @param {number} aScreenY
-		  *   The Y coordinate on the screen.
-		  * @param {nsIDOMWindow=} aRootFrame (optional)
-		  *   The root frame (maybe a chrome window) which you want to find
-		  *   a sub frame from. If you didn't specify this option, this finds
-		  *   a frame from the topmost window on the specified coordinates.
-		  *
-		  * @return {?nsIDOMWindow}
-		  *   The found frame. If there is no frame, null will be returned.
-		  */
+		 * Finds a frame from specified coordinates on the screen. You can
+		 * specify aRootFrame before coordinates as:
+		 * <code>getFrameFromScreenPoint(aRootFrame, aScreenX, aScreenY)</code>.
+		 *
+		 * @see action.getWindowFromScreenPoint (alias, deprecated)
+		 *
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 * @param {nsIDOMWindow=} aRootFrame (optional)
+		 *   The root frame (maybe a chrome window) which you want to find
+		 *   a sub frame from. If you didn't specify this option, this finds
+		 *   a frame from the topmost window on the specified coordinates.
+		 *
+		 * @return {?nsIDOMWindow}
+		 *   The found frame. If there is no frame, null will be returned.
+		 */
 		getFrameFromScreenPoint : function() 
 		{
 			var [aFrame, aScreenX, aScreenY] = this._getFrameAndScreenPointFromArguments(arguments);
