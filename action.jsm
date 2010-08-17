@@ -96,7 +96,7 @@ var action;
 		/**
 		 * Returns whether the full zoom feature is enabled or not.
 		 *
-		 * @return {Boolean}
+		 * @returns {Boolean}
 		 *   Availability of full zoom.
 		 */
 		isFullZoom : function() 
@@ -115,8 +115,10 @@ var action;
 		 * @param {nsIDOMWindow} aFrame
 		 *   The frame you want to know the zoom factor.
 		 *
-		 * @return {number}
+		 * @returns {number}
 		 *   The zoom factor of the frame. 0 means 0%, 1 means 100%.
+		 *
+		 * @throws {Error} If no frame is given.
 		 */
 		getZoom : function(aFrame) 
 		{
@@ -147,7 +149,7 @@ var action;
 		 * @param {Array=} aArguments (optional)
 		 *   An array of options for _getMouseOptionsFromArguments.
 		 *
-		 * @return {{type: string,
+		 * @returns {{type: string,
 		 *           button: number,
 		 *           altKey: boolean,
 		 *           ctrlKey: boolean,
@@ -215,7 +217,7 @@ var action;
 		 *   A hash of modifier keys. Default value of each key is
 		 *   <code>false</code>.
 		 *
-		 * @return {{x: number,
+		 * @returns {{x: number,
 		 *           y: number,
 		 *           screenX: number,
 		 *           screenY: number,
@@ -304,6 +306,8 @@ var action;
 		 *          shiftKey: boolean}=} aModifiers (optional)
 		 *   A hash of modifier keys. Default value of each key is
 		 *   <code>false</code>.
+		 *
+		 * @throws {Error} If no element is given.
 		 *
 		 * @see action.leftClickOn (alias)
 		 */
@@ -541,6 +545,8 @@ var action;
 		 *   A hash of modifier keys. Default value of each key is
 		 *   <code>false</code>.
 		 *
+		 * @throws {Error} If no element is found on the specified point.
+		 *
 		 * @see action.leftClickAt (alias)
 		 */
 		clickAt : function() 
@@ -776,6 +782,8 @@ var action;
 		 *   Details of the event to be emulated. The interface is based on
 		 *   nsIDOMMouseEvent.
 		 *
+		 * @throws {Error} If there is no window on the specified point.
+		 *
 		 * @deprecated
 		 *   This is retained mainly for backward compatibilities and internal
 		 *   use. On actual cases, you should use each short-hand method named
@@ -892,7 +900,7 @@ var action;
 		 * @param {nsIDOMElement} aElement
 		 *   A XUL element in a popup.
 		 *
-		 * @return {?nsIDOMElement}
+		 * @returns {?nsIDOMElement}
 		 *   The found popup element (menupopup, popup, tooltip, or panel).
 		 *   If the given element is not in a popup, <code>null</code> will be
 		 *   returned.
@@ -920,6 +928,8 @@ var action;
 		 *          metaKey: boolean, shiftKey: boolean}=} aOptions (optional)
 		 *   Details of the event to be emulated. The interface is based on
 		 *   nsIDOMMouseEvent.
+		 *
+		 * @throws {Error} If no element is given.
 		 *
 		 * @deprecated
 		 *   This is retained mainly for backward compatibilities and internal
@@ -1001,8 +1011,10 @@ var action;
 		 * @param {Object=} aOptions (optional)
 		 *   A hash, options for fireMouseEvent and fireMouseEventOnElement.
 		 *
-		 * @return {nsIDOMElement}
+		 * @returns {nsIDOMElement}
 		 *   A DOM mouse event.
+		 *
+		 * @throws {Error} If no element is given.
 		 *
 		 * @see action.fireMouseEvent
 		 * @see action.fireMouseEventOnElement
@@ -1049,7 +1061,7 @@ var action;
 		 * @param {nsIDOMElement} aElement
 		 *   A DOM element which is used to calculate coordinates.
 		 *
-		 * @return {{x: number,
+		 * @returns {{x: number,
 		 *           y: number,
 		 *           screenX: number,
 		 *           screenY: number}}
@@ -1116,7 +1128,7 @@ var action;
     
 // drag and drop: under construction 
 	
-		/** @private */
+		/** @ignore */
 		dragStart : function(aFrame, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -1124,7 +1136,7 @@ var action;
 			this.fireMouseEvent(aFrame, aOptions);
 		},
 	
-		/** @private */
+		/** @ignore */
 		dragStartOnElement : function(aElement, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -1132,7 +1144,7 @@ var action;
 			this.fireMouseEventOnElement(aElement, aOptions);
 		},
   
-		/** @private */
+		/** @ignore */
 		dragEnd : function(aFrame, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -1140,7 +1152,7 @@ var action;
 			this.fireMouseEvent(aFrame, aOptions);
 		},
 	
-		/** @private */
+		/** @ignore */
 		dragEndOnElement : function(aElement, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -1148,7 +1160,7 @@ var action;
 			this.fireMouseEventOnElement(aElement, aOptions);
 		},
   
-		/** @private */
+		/** @ignore */
 		dragMove : function(aFrame, aFromX, aFromY, aToX, aToY, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -1204,7 +1216,7 @@ var action;
 			return dragEndFlag;
 		},
 	
-		/** @private */
+		/** @ignore */
 		dragMove : function(aFromElement, aToElement, aOptions) 
 		{
 			if (aFromElement.nodeType != aFromElement.ELEMENT_NODE)
@@ -1226,7 +1238,7 @@ var action;
 				);
 		},
   
-		/** @private */
+		/** @ignore */
 		dragAndDrop : function(aFrame, aFromX, aFromY, aToX, aToY, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -1249,7 +1261,7 @@ var action;
 			return dragEndFlag;
 		},
 	
-		/** @private */
+		/** @ignore */
 		dragAndDropOnElement : function(aFromElement, aToElement, aOptions) 
 		{
 			if (aFromElement.nodeType != aFromElement.ELEMENT_NODE)
@@ -1296,7 +1308,7 @@ var action;
 		 *   A hash of modifier keys. Default value of each key is
 		 *   <code>false</code>.
 		 *
-		 * @return {{keyCode: number,
+		 * @returns {{keyCode: number,
 		 *           charCode: number,
 		 *           element: ?nsIDOMElement,
 		 *           altKey: boolean,
@@ -1381,6 +1393,8 @@ var action;
 		 *   A hash of modifier keys. Default value of each key is
 		 *   <code>false</code>.
 		 *
+		 * @throws {Error} If no element is given.
+		 *
 		 * @see action.keypressOn (alias)
 		 */
 		keyPressOn : function() 
@@ -1438,6 +1452,8 @@ var action;
 		 *          metaKey: boolean, shiftKey: boolean}=} aOptions (optional)
 		 *   Details of the event to be emulated. The interface is based on
 		 *   nsIDOMKeyEvent.
+		 *
+		 * @throws {Error} If no element is given.
 		 *
 		 * @deprecated
 		 *   This is retained mainly for backward compatibilities and internal
@@ -1517,8 +1533,10 @@ var action;
 		 * @param {Object=} aOptions (optional)
 		 *   A hash, options for fireKeyEventOnElement.
 		 *
-		 * @return {nsIDOMElement}
+		 * @returns {nsIDOMElement}
 		 *   A DOM keyboard event.
+		 *
+		 * @throws {Error} If no element is given.
 		 *
 		 * @see action.fireKeyEventOnElement
 		 */
@@ -1593,8 +1611,11 @@ var action;
 		 * @param {Object=} aOptions (optional)
 		 *   A hash, options for fireMouseEvent.
 		 *
-		 * @return {boolean}
+		 * @returns {boolean}
 		 *   A XULCommandEvent is fired or not.
+		 *
+		 * @throws {Error}
+		 *   If no frame is given, or there is no element on the point.
 		 *
 		 * @see action.fireMouseEvent
 		 */
@@ -1625,8 +1646,10 @@ var action;
 		 *   A hash, options for fireMouseEventOnElement or
 		 *   fireKeyEventOnElement.
 		 *
-		 * @return {boolean}
+		 * @returns {boolean}
 		 *   A XULCommandEvent is fired or not.
+		 *
+		 * @throws {Error} If no element is given.
 		 *
 		 * @see action.fireMouseEventOnElement
 		 * @see action.fireKeyEventOnElement
@@ -1665,7 +1688,7 @@ var action;
 		 * @param {nsIDOMEvent} aSourceEvent
 		 *   A source event which is a keyboard event or a mouse event.
 		 *
-		 * @return {nsIDOMXULCommandEvent}
+		 * @returns {nsIDOMXULCommandEvent}
 		 *   The created XULCommandEvent.
 		 */
 		_createXULCommandEvent : function(aSourceEvent) 
@@ -1694,7 +1717,7 @@ var action;
 		 * @param {nsIDOMElement} aElement
 		 *   A XUL element.
 		 *
-		 * @return {?nsIDOMElement}
+		 * @returns {?nsIDOMElement}
 		 *   The found XUL element or <code>null</code>.
 		 */
 		_getXULCommandEventDispatcher : function(aElement) 
@@ -1720,7 +1743,7 @@ var action;
 		 * @param {nsIDOMElement} aElement
 		 *   A XUL element.
 		 *
-		 * @return {?nsIDOMElement}
+		 * @returns {?nsIDOMElement}
 		 *   The found XUL element or <code>null</code>.
 		 */
 		_getXULKeyEventDispatcher : function(aElement) 
@@ -1872,7 +1895,7 @@ var action;
 		 * @param {string=} aInput (optional)
 		 *   A string to be input.
 		 *
-		 * @return {{input: string,
+		 * @returns {{input: string,
 		 *           element: nsIDOMElement}}}
 		 *
 		 * @see action.inputTextToField
@@ -1901,6 +1924,9 @@ var action;
 		 *   The target element which you want to send input event.
 		 * @param {string=} aInput (optional)
 		 *   A string to be input.
+		 *
+		 * @throws {Error}
+		 *   If no element is given, or the element is not editable.
 		 */
 		inputTo : function() 
 		{
@@ -1916,6 +1942,9 @@ var action;
 		 *   The target element which you want to send input event.
 		 * @param {string=} aInput (optional)
 		 *   A string to be input.
+		 *
+		 * @throws {Error}
+		 *   If no element is given, or the element is not editable.
 		 */
 		appendTo : function() 
 		{
@@ -1932,6 +1961,9 @@ var action;
 		 *   The target element which you want to send input event.
 		 * @param {string=} aInput (optional)
 		 *   A string to be pasted.
+		 *
+		 * @throws {Error}
+		 *   If no element is given, or the element is not editable.
 		 */
 		pasteTo : function() 
 		{
@@ -1948,6 +1980,9 @@ var action;
 		 *   The target element which you want to send input event.
 		 * @param {string=} aInput (optional)
 		 *   A string to be pasted.
+		 *
+		 * @throws {Error}
+		 *   If no element is given, or the element is not editable.
 		 */
 		additionallyPasteTo : function() 
 		{
@@ -1987,6 +2022,9 @@ var action;
 		 *   <code>true</code>, this method doesn't fire key events for each
 		 *   characters. Otherwise key events for each character will be
 		 *   emulated.
+		 *
+		 * @throws {Error}
+		 *   If no element is given, or the element is not editable.
 		 *
 		 * @see action.inputTo
 		 * @see action.appendTo
@@ -2051,7 +2089,9 @@ var action;
 		 * @param {number} aScreenY (optional)
 		 *   The Y coordinate on the screen.
 		 *
-		 * @return {nsIDOMWindow}
+		 * @throws {Error} If there is no window on the point.
+		 *
+		 * @returns {nsIDOMWindow}
 		 *   The found window.
 		 */
 		_getWindowAt : function(aScreenX, aScreenY) 
@@ -2118,23 +2158,25 @@ var action;
 		},
  
 		/**
-		  * Finds a DOM element from specified coordinates on the screen.
-		  *
-		  * @param {number} aScreenX
-		  *   The X coordinate on the screen.
-		  * @param {number} aScreenY
-		  *   The Y coordinate on the screen.
-		  * @param {nsIDOMWindow=} aRootFrame (optional)
-		  *   The root frame (maybe a chrome window) which you want to find
-		  *   an element from. If you didn't specify this option, this finds
-		  *   an element from the topmost window on the specified coordinates.
-		  *
-		  * @return {?nsIDOMElement}
-		  *   The found element. If there is no DOM element, <code>null</code>
-		  *   will be returned.
-		  *
-		  * @see action.getElementFromScreenPoint (alias)
-		  */
+		 * Finds a DOM element from specified coordinates on the screen.
+		 *
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 * @param {nsIDOMWindow=} aRootFrame (optional)
+		 *   The root frame (maybe a chrome window) which you want to find
+		 *   an element from. If you didn't specify this option, this finds
+		 *   an element from the topmost window on the specified coordinates.
+		 *
+		 * @returns {?nsIDOMElement}
+		 *   The found element. If there is no DOM element, <code>null</code>
+		 *   will be returned.
+		 *
+		 * @throws {Error} If no frame is given.
+		 *
+		 * @see action.getElementFromScreenPoint (alias)
+		 */
 		getElementAt : function() 
 		{
 			var [aFrame, aScreenX, aScreenY] = this._getFrameAndScreenPointFromArguments.apply(this, arguments);
@@ -2173,21 +2215,21 @@ var action;
 		getElementFromScreenPoint : function() { return this.getElementAt.apply(this, arguments); },
 	
 		/**
-		  * Finds a showing popup element from specified coordinates on the
-		  * screen.
-		  *
-		  * @param {nsIDOMWindow} aFrame
-		  *   The root frame (maybe a chrome window) which you want to find
-		  *   a popup from.
-		  * @param {number} aScreenX
-		  *   The X coordinate on the screen.
-		  * @param {number} aScreenY
-		  *   The Y coordinate on the screen.
-		  *
-		  * @return {?nsIDOMElement}
-		  *   The found popup element. If there is no popup, <code>null</code>
-		  *   will be returned.
-		  */
+		 * Finds a showing popup element from specified coordinates on the
+		 * screen.
+		 *
+		 * @param {nsIDOMWindow} aFrame
+		 *   The root frame (maybe a chrome window) which you want to find
+		 *   a popup from.
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 *
+		 * @returns {?nsIDOMElement}
+		 *   The found popup element. If there is no popup, <code>null</code>
+		 *   will be returned.
+		 */
 		_getPopupElementAt : function(aFrame, aScreenX, aScreenY) 
 		{
 			var doc = aFrame.document;
@@ -2218,20 +2260,20 @@ var action;
 		},
  
 		/**
-		  * Finds the DOM element from specified coordinates on the screen.
-		  * If there are anonymous contents, this scans them recursively.
-		  *
-		  * @param {?nsIDOMElement} aElement
-		  *   The root element which you want to find a DOM element from.
-		  * @param {number} aScreenX
-		  *   The X coordinate on the screen.
-		  * @param {number} aScreenY
-		  *   The Y coordinate on the screen.
-		  *
-		  * @return {?nsIDOMElement}
-		  *   The found element. If there is no element, <code>null</code>
-		  *   will be returned.
-		  */
+		 * Finds the DOM element from specified coordinates on the screen.
+		 * If there are anonymous contents, this scans them recursively.
+		 *
+		 * @param {?nsIDOMElement} aElement
+		 *   The root element which you want to find a DOM element from.
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 *
+		 * @returns {?nsIDOMElement}
+		 *   The found element. If there is no element, <code>null</code>
+		 *   will be returned.
+		 */
 		_getOriginalTargetAt : function(aElement, aScreenX, aScreenY) 
 		{
 			return this._getOriginalTargetAtInternal(aElement, aScreenX, aScreenY) || aElement;
@@ -2276,9 +2318,11 @@ var action;
 		 *   a sub frame from. If you didn't specify this option, this finds
 		 *   a frame from the topmost window on the specified coordinates.
 		 *
-		 * @return {?nsIDOMWindow}
+		 * @returns {?nsIDOMWindow}
 		 *   The found frame. If there is no frame, <code>null</code> will be
 		 *   returned.
+		 *
+		 * @throws {Error} If no frame is given.
 		 *
 		 * @see action.getFrameFromScreenPoint (alias)
 		 * @see action.getWindowFromScreenPoint (alias, deprecated)
@@ -2325,8 +2369,10 @@ var action;
 		 * @param {number} aScreenY
 		 *   The Y coordinate on the screen.
 		 *
-		 * @return {{x: number, y: number}}
+		 * @returns {{x: number, y: number}}
 		 *   Relative coordinates based on the given frame.
+		 *
+		 * @throws {Error} If no frame is given.
 		 */
 		_calculateClientPointFromScreenPoint : function(aFrame, aScreenX, aScreenY) 
 		{
@@ -2353,12 +2399,14 @@ var action;
 		 * @param {nsIDOMWindow} aFrame
 		 *   The base to calculate relative coordinates.
 		 *
-		 * @return {{x: number,
+		 * @returns {{x: number,
 		 *           y: number,
 		 *           screenX: number,
 		 *           screenY: number}}
 		 *   A hash. All of properties except x, y, screenX and screenY are
 		 *   inherited from the given hash.
+		 *
+		 * @throws {Error} If no frame is given.
 		 */
 		_normalizeScreenAndClientPoint : function(aOptions, aFrame) 
 		{
@@ -2410,7 +2458,7 @@ var action;
 		 * @param {number} aScreenY
 		 *   The Y coordinate on the screen.
 		 *
-		 * @return {boolean}
+		 * @returns {boolean}
 		 *   Whether the specified point is in the box or not.
 		 */
 		_isInside : function(aBox, aScreenX, aScreenY) 
@@ -2435,7 +2483,7 @@ var action;
 		 * @param {nsIDOMWindow} aFrame
 		 *   The target frame.
 		 *
-		 * @return {nsIDOMWindowUtils}
+		 * @returns {nsIDOMWindowUtils}
 		 *   The nsIDOMWindowUtils service for the frame.
 		 */
 		_getWindowUtils : function(aFrame) 
@@ -2451,7 +2499,7 @@ var action;
 		 * @param {nsIDOMNode} aNode
 		 *   The base node to find document.
 		 *
-		 * @return {nsIDOMDocument}
+		 * @returns {nsIDOMDocument}
 		 *   The document related to the node.
 		 */
 		_getDocumentFromEventTarget : function(aNode) 
