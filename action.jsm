@@ -137,13 +137,14 @@ var action;
 // utils 
 	
 		/**
-		 * Returns given options as a normalized hash.
+		 * Returns given options as a normalized hash for fireMouseEvent and
+		 * fireMouseEventOnElement.
 		 *
-		 * @param {string} aEventType
+		 * @param {string} aType
 		 *   The event type of the mouse event.
 		 * @param {number} aButton
 		 *   The button related to the mouse event. 0=left, 1=middle, 2=right.
-		 * @param {Array=} aOptions (optional)
+		 * @param {Array=} aArguments (optional)
 		 *   An array of options for _getMouseOptionsFromArguments.
 		 *
 		 * @return {{type: string,
@@ -164,7 +165,7 @@ var action;
 		 */
 		_getMouseOptionsFor : function(aType, aButton, aArguments) 
 		{
-			var options = this._getMouseOptionsFromArguments(aArguments);
+			var options = this._getMouseOptionsFromArguments.apply(this, aArguments);
 			var returnOptions = {
 				type : aType,
 				button : aButton,
@@ -199,7 +200,7 @@ var action;
 		 *   the target frame from. If you didn't specify this option, this
 		 *   finds frames from the topmost window on the specified coordinates.
 		 * @param {nsIDOMElement=} aElement (optional)
-		 *   The target element which you want to send generated event.
+		 *   The target element which you want to send created event.
 		 * @param {{alt: boolean, altKey: boolean,
 		 *          ctrl: boolean, ctrlKey: boolean,
 		 *          control: boolean, controlKey: boolean,
@@ -224,13 +225,13 @@ var action;
 		 *   coordinates from the window edge, if no frame is given and there
 		 *   is a frame on the given coordinates on the screen.
 		 */
-		_getMouseOptionsFromArguments : function(aArguments) 
+		_getMouseOptionsFromArguments : function() 
 		{
 			var modifierNames = 'alt,ctrl,control,shift,meta,cmd,command'
 									.replace(/([^,]+)/g, '$1,$1Key')
 									.split(',');
 			var x, y, w, modifiers, element;
-			Array.slice(aArguments).some(function(aArg) {
+			Array.slice(arguments).some(function(aArg) {
 				if (typeof aArg == 'number') {
 					if (x === void(0))
 						x = aArg;
@@ -291,7 +292,7 @@ var action;
 		 * @see action.leftClickOn (alias)
 		 *
 		 * @param {nsIDOMElement} aElement
-		 *   The target element which you want to send generated event.
+		 *   The target element which you want to send created event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
@@ -1260,7 +1261,36 @@ var action;
 	
 // utils 
 	
-		_getKeyOptionsFor : function(aType, aArguments) 
+		/**
+		 * Returns given options as a normalized hash for
+		 * fireKeyEventOnElement. Options can be in random order.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element which you want to send created event.
+		 * @param {number=} aKeyCode (optional)
+		 *   A keycode defined in nsIDOMKeyEvent.
+		 * @param {string=} aCharOrKeyName (optional)
+		 *   A single character to detect keyboard key ('a', 'B', '!', ' ', etc.)
+		 *   or a name of special keys ('ENTER', 'DELETE', 'F1', etc.).
+		 * @param {{alt: boolean, altKey: boolean,
+		 *          ctrl: boolean, ctrlKey: boolean,
+		 *          control: boolean, controlKey: boolean,
+		 *          meta: boolean, metaKey: boolean,
+		 *          cmd: boolean, cmdKey: boolean,
+		 *          command: boolean, commandKey: boolean,
+		 *          shift: boolean, shiftKey: boolean}=} (optional)
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
+		 *
+		 * @return {{keyCode: number,
+		 *           charCode: number,
+		 *           element: ?nsIDOMElement,
+		 *           altKey: boolean,
+		 *           ctrlKey: boolean,
+		 *           metaKey: boolean,
+		 *           shiftKey: boolean}}}
+		 */
+		_getKeyOptionsFromArguments : function() 
 		{
 			var modifierNames = 'alt,ctrl,control,shift,meta,cmd,command'
 									.replace(/([^,]+)/g, '$1,$1Key')
@@ -1268,7 +1298,7 @@ var action;
 			var keyCode = 0,
 				charCode = 0,
 				modifiers, element;
-			Array.slice(aArguments).some(function(aArg) {
+			Array.slice(arguments).some(function(aArg) {
 				if (typeof aArg == 'number') {
 					keyCode = aArg;
 				}
@@ -1307,7 +1337,6 @@ var action;
 			}
 
 			return {
-				type : aType,
 				keyCode : keyCode,
 				charCode : charCode,
 				element : element,
@@ -1318,25 +1347,62 @@ var action;
 			};
 		},
   
+		/**
+		 * Emulates a single key press on a element. Options can be in
+		 * random order.
+		 *
+		 * @see action.keypressOn (alias)
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element which you want to send created event.
+		 * @param {number=} aKeyCode (optional)
+		 *   A keycode defined in nsIDOMKeyEvent.
+		 * @param {string=} aCharOrKeyName (optional)
+		 *   A single character to detect keyboard key ('a', 'B', '!', ' ', etc.)
+		 *   or a name of special keys ('ENTER', 'DELETE', 'F1', etc.).
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} aModifiers (optional)
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
+		 */
 		keyPressOn : function() 
 		{
-			var options = this._getKeyOptionsFor('keypress', arguments);
+			var options = this._getKeyOptionsFromArguments.apply(this, arguments);
+			options.type = 'keypress';
 			this.fireKeyEventOnElement(options.element, options);
 		},
 		/** @see action.keyPressOn */
 		keypressOn : function() { return this.keyPressOn.apply(this, arguments); },
  
-		keyDownOn : function(aElement, aKeyOrCharCode) 
+		/**
+		 * Emulates a single key down on a element. Options are just
+		 * same to action.keyPressOn.
+		 *
+		 * @see action.keyPressOn
+		 * @see action.keydownOn (alias)
+		 */
+		keyDownOn : function() 
 		{
-			var options = this._getKeyOptionsFor('keydown', arguments);
+			var options = this._getKeyOptionsFromArguments.apply(this, arguments);
+			options.type = 'keydown';
 			this.fireKeyEventOnElement(options.element, options);
 		},
 		/** @see action.keyDownOn */
 		keydownOn : function() { return this.keyDownOn.apply(this, arguments); },
  
-		keyUpOn : function(aElement, aKeyOrCharCode) 
+		/**
+		 * Emulates a single key down on a element. Options are just
+		 * same to action.keyPressOn.
+		 *
+		 * @see action.keyPressOn
+		 * @see action.keyupOn (alias)
+		 */
+		keyUpOn : function() 
 		{
-			var options = this._getKeyOptionsFor('keyup', arguments);
+			var options = this._getKeyOptionsFromArguments.apply(this, arguments);
+			options.type = 'keyup';
 			this.fireKeyEventOnElement(options.element, options);
 		},
 		/** @see action.keyUpOn */
@@ -1344,6 +1410,28 @@ var action;
  
 // low level API 
 	
+		/**
+		 * Emulates various keyboard events on a DOM element.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element which you want to send created event.
+		 * @param {{type: string,
+		 *          keyCode: number,
+		 *          charCode: number,
+		 *          altKey: boolean, ctrlKey: boolean,
+		 *          metaKey: boolean, shiftKey: boolean}=} aOptions (optional)
+		 *   Details of the event to be emulated. The interface is based on
+		 *   nsIDOMKeyEvent.
+		 *
+		 * @deprecated
+		 *   This is retained mainly for backward compatibilities and internal
+		 *   use. On actual cases, you should use each short-hand method named
+		 *   <code>key<var>***</var>On</code>.
+		 *
+		 * @see action.keyPressOn
+		 * @see action.keyDownOn
+		 * @see action.keyUpOn
+		 */
 		fireKeyEventOnElement : function(aElement, aOptions) 
 		{
 			if (!aElement ||
@@ -1405,6 +1493,17 @@ var action;
 				this._emulateEnterOnXULElement(aElement, aOptions);
 		},
 	
+		/**
+		 * Creates a DOM keyboard event from the given element and options.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   A DOM element which is used to create new event.
+		 * @param {Object=} aOptions (optional)
+		 *   A hash, options for fireKeyEventOnElement.
+		 *
+		 * @return {nsIDOMElement}
+		 *   A DOM keyboard event.
+		 */
 		_createKeyEventOnElement : function(aElement, aOptions) 
 		{
 			if (!aElement ||
@@ -1439,6 +1538,14 @@ var action;
 			return event;
 		},
  
+		/**
+		 * Emulate side-effects of keyboard events on a XUL element.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   A XUL element.
+		 * @param {Object=} aOptions (optional)
+		 *   A hash, options for fireKeyEventOnElement.
+		 */
 		_emulateEnterOnXULElement : function(aElement, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
