@@ -261,7 +261,7 @@ var action;
 			let screenX, screenY;
 			if (!w && x !== void(0) && y !== void(0)) {
 				w = this._getWindowAt(x, y);
-				w = this.getFrameFromScreenPoint(w, x, y);
+				w = this.getFrameAt(w, x, y);
 				let root = this.getBoxObjectFor(w.document.documentElement);
 				screenX = x;
 				screenY = y;
@@ -808,7 +808,7 @@ var action;
 			var screenX = aOptions.screenX;
 			var screenY = aOptions.screenY;
 
-			var win = this.getFrameFromScreenPoint(aFrame, screenX, screenY);
+			var win = this.getFrameAt(aFrame, screenX, screenY);
 			if (!win ||
 				!(win instanceof Ci.nsIDOMWindow))
 				throw new Error('action.fireMouseEvent::there is no frame at ['+screenX+', '+screenY+']!');
@@ -2265,7 +2265,7 @@ var action;
 		/**
 		 * Finds a frame from specified coordinates on the screen. You can
 		 * specify aRootFrame before coordinates as:
-		 * <code>getFrameFromScreenPoint(aRootFrame, aScreenX, aScreenY)</code>.
+		 * <code>getFrameAt(aRootFrame, aScreenX, aScreenY)</code>.
 		 *
 		 * @param {number} aScreenX
 		 *   The X coordinate on the screen.
@@ -2288,7 +2288,7 @@ var action;
 			var [aFrame, aScreenX, aScreenY] = this._getFrameAndScreenPointFromArguments.apply(this, arguments);
 			if (!aFrame ||
 				!(aFrame instanceof Ci.nsIDOMWindow))
-				throw new Error('action.getFrameFromScreenPoint::['+aFrame+'] is not a frame!');
+				throw new Error('action.getFrameAt::['+aFrame+'] is not a frame!');
 
 			var elem = this.getElementAt(aFrame, aScreenX, aScreenY);
 			return elem ? elem.ownerDocument.defaultView : null ;
