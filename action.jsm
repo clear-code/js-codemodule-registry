@@ -751,7 +751,40 @@ var action;
 // low level API 
 	
 		/**
-		 * Emulates various mouse event
+		 * Emulates various mouse events at the specified coordinates on the
+		 * screen.
+		 *
+		 * @param {nsIDOMWindow} aFrame
+		 *   The target frame to send a mouse event.
+		 * @param {{x: number,
+		 *          y: number,
+		 *          screenX: number,
+		 *          screenY: number,
+		 *          type: string,
+		 *          button: number,
+		 *          detail: number,
+		 *          altKey: boolean, ctrlKey: boolean,
+		 *          metaKey: boolean, shiftKey: boolean}=} aOptions (optional)
+		 *   Details of the event to be emulated. The interface is based on
+		 *   nsIDOMMouseEvent.
+		 *
+		 * @deprecated
+		 *   This is retained mainly for backward compatibilities and internal
+		 *   use. On actual cases, you should use each short-hand method named
+		 *   <code><var>***</var>At</code>.
+		 *
+		 * @see action.clickAt
+		 * @see action.middleClickAt
+		 * @see action.rightClickAt
+		 * @see action.doubleClickAt
+		 * @see action.middleDoubleClickAt
+		 * @see action.rightDoubleClickAt
+		 * @see action.mouseDownAt
+		 * @see action.middleMouseDownAt
+		 * @see action.rightMouseDownAt
+		 * @see action.mouseUpAt
+		 * @see action.middleMouseUpAt
+		 * @see action.rightMouseUpAt
 		 */
 		fireMouseEvent : function(aFrame, aOptions) 
 		{
@@ -808,7 +841,7 @@ var action;
 					default:
 						utils.sendMouseEvent('mousedown', x, y, button, detail, flags);
 						utils.sendMouseEvent('mouseup', x, y, button, detail, flags);
-		//				this._emulateClickOnXULElement(node, aOptions);
+						// this._emulateClickOnXULElement(node, aOptions);
 						break;
 				}
 				return;
@@ -825,6 +858,14 @@ var action;
 			}
 		},
 	
+		/**
+		 * Emulate side-effects of a click action on a XUL element.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   A XUL element.
+		 * @param {Object=} aOptions (optional)
+		 *   A hash, options for fireMouseEvent.
+		 */
 		_emulateClickOnXULElement : function(aElement, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
@@ -835,6 +876,17 @@ var action;
 			);
 		},
  
+		/**
+		 * Finds the nearest parent popup from the given XUL element.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   A XUL element in a popup.
+		 *
+		 * @return {?nsIDOMElement}
+		 *   The found popup element (menupopup, popup, tooltip, or panel).
+		 *   If the given element is not in a popup, <code>null</code> will be
+		 *   returned.
+		 */
 		_getOwnerPopup : function(aElement) 
 		{
 			return aElement.ownerDocument.evaluate(
@@ -846,6 +898,37 @@ var action;
 				).singleNodeValue;
 		},
   
+		/**
+		 * Emulates various mouse events on a DOM element.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element to send a mouse event.
+		 * @param {{type: string,
+		 *          button: number,
+		 *          detail: number,
+		 *          altKey: boolean, ctrlKey: boolean,
+		 *          metaKey: boolean, shiftKey: boolean}=} aOptions (optional)
+		 *   Details of the event to be emulated. The interface is based on
+		 *   nsIDOMMouseEvent.
+		 *
+		 * @deprecated
+		 *   This is retained mainly for backward compatibilities and internal
+		 *   use. On actual cases, you should use each short-hand method named
+		 *   <code><var>***</var>On</code>.
+		 *
+		 * @see action.clickOn
+		 * @see action.middleClickOn
+		 * @see action.rightClickOn
+		 * @see action.doubleClickOn
+		 * @see action.middleDoubleClickOn
+		 * @see action.rightDoubleClickOn
+		 * @see action.mouseDownOn
+		 * @see action.middleMouseDownOn
+		 * @see action.rightMouseDownOn
+		 * @see action.mouseUpOn
+		 * @see action.middleMouseUpOn
+		 * @see action.rightMouseUpOn
+		 */
 		fireMouseEventOnElement : function(aElement, aOptions) 
 		{
 			if (!aElement ||
@@ -1228,7 +1311,7 @@ var action;
 		/** @see action.keyUpOn */
 		keyupOn : function() { return this.keyUpOn.apply(this, arguments); },
  
-// lower level API 
+// low level API 
 	
 		fireKeyEventOnElement : function(aElement, aOptions) 
 		{
@@ -1576,7 +1659,7 @@ var action;
 			this.inputTextToField(options.element, options.input, true, true);
 		},
  
-// lower level API 
+// low level API 
 	
 		_withIMECharacters : '\u3040-\uA4CF\uF900-\uFAFF', 
 		get _inputArrayPattern() {
@@ -1636,7 +1719,7 @@ var action;
 			aElement.dispatchEvent(event);
 		},
    
-/* 座標操作 */ 
+/* Operations for coordinates */ 
 	
 		_getWindowFromScreenPoint : function(aScreenX, aScreenY) 
 		{
@@ -1714,8 +1797,8 @@ var action;
 		  *   an element from the topmost window on the specified coordinates.
 		  *
 		  * @return {?nsIDOMElement}
-		  *   The found element. If there is no DOM element, null will be
-		  *   returned.
+		  *   The found element. If there is no DOM element, <code>null</code>
+		  *   will be returned.
 		  */
 		getElementFromScreenPoint : function() 
 		{
@@ -1821,7 +1904,8 @@ var action;
 		 *   a frame from the topmost window on the specified coordinates.
 		 *
 		 * @return {?nsIDOMWindow}
-		 *   The found frame. If there is no frame, null will be returned.
+		 *   The found frame. If there is no frame, <code>null</code> will be
+		 *   returned.
 		 */
 		getFrameFromScreenPoint : function() 
 		{
