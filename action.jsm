@@ -1,7 +1,7 @@
 /**
  * @fileOverview User Action Emulator for Firefox 3.5 or later 
  * @author       ClearCode Inc.
- * @version      2.0
+ * @version      .0
  *
  * @example
  *   Components.utils.import('resource://my-modules/action.jsm');
@@ -802,7 +802,7 @@ var action;
 
 			if (!aOptions) aOptions = {};
 
-			this._normalizeScreenAndClientPoint(aOptions, aFrame);
+			aOptions = this._normalizeScreenAndClientPoint(aOptions, aFrame);
 			var x = aOptions.x;
 			var y = aOptions.y;
 			var screenX = aOptions.screenX;
@@ -1605,7 +1605,7 @@ var action;
 				throw new Error('action.fireXULCommandEvent::['+aFrame+'] is not a frame!');
 
 			if (!aOptions) aOptions = {};
-			this._normalizeScreenAndClientPoint(aOptions, aFrame);
+			aOptions = this._normalizeScreenAndClientPoint(aOptions, aFrame);
 			var node = this.getElementFromScreenPoint(aFrame, aOptions.screenX, aOptions.screenY);
 			if (!node)
 				throw new Error('action.fireXULCommandEvent::there is no element at ['+aOptions.screenX+','+aOptions.screenY+']!');
@@ -1893,24 +1893,62 @@ var action;
 			return { input : input, element : element };
 		},
   
+		/**
+		 * Emulates text input to an editable element. Existing contents are
+		 * automatically cleared. Options can be in random order.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element which you want to send input event.
+		 * @param {string=} aInput (optional)
+		 *   A string to be input.
+		 */
 		inputTo : function() 
 		{
 			var options = this._getInputOptionsFromArguments.apply(this, arguments);
-			this.inputTextToField(options.element, options.input);
+			this.inputTextToField(options.element, options.input, false, false);
 		},
  
+		/**
+		 * Emulates text input to an editable element. The given text will be
+		 * input after existing contents. Options can be in random order.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element which you want to send input event.
+		 * @param {string=} aInput (optional)
+		 *   A string to be input.
+		 */
 		appendTo : function() 
 		{
 			var options = this._getInputOptionsFromArguments.apply(this, arguments);
-			this.inputTextToField(options.element, options.input, true);
+			this.inputTextToField(options.element, options.input, true, false);
 		},
  
+		/**
+		 * Emulates text pasting to an editable element from the clipboard.
+		 * Existing contents are automatically cleared. Options can be in
+		 * random order.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element which you want to send input event.
+		 * @param {string=} aInput (optional)
+		 *   A string to be pasted.
+		 */
 		pasteTo : function() 
 		{
 			var options = this._getInputOptionsFromArguments.apply(this, arguments);
 			this.inputTextToField(options.element, options.input, false, true);
 		},
  
+		/**
+		 * Emulates text pasting to an editable element from the clipboard.
+		 * The given text will be pasted after existing contents. Options can
+		 * be in random order.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element which you want to send input event.
+		 * @param {string=} aInput (optional)
+		 *   A string to be pasted.
+		 */
 		additionallyPasteTo : function() 
 		{
 			var options = this._getInputOptionsFromArguments.apply(this, arguments);
@@ -1929,7 +1967,33 @@ var action;
 			return this._directInputPattern = new RegExp('[^'+this._withIMECharacters+']');
 		},
  
-		inputTextToField : function(aElement, aValue, aAppend, aDontFireKeyEvents) 
+		/**
+		 * Emulates text input to an editable element.
+		 *
+		 * @deprecated
+		 *   This is retained mainly for backward compatibilities and internal
+		 *   use. On actual cases, you should use each short-hand method.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element which you want to send input event.
+		 * @param {string=} aInput (optional)
+		 *   A string to be input.
+		 * @param {boolean=} aIsAppend (optional)
+		 *   Whether the input should be appended or not. If <code>true</code>,
+		 *   the input will be appended after the existing contents. Otherwise
+		 *   this method clears the existing contents.
+		 * @param {boolean=} aDontFireKeyEvents (optional)
+		 *   Whether keyboard events should be emulated or not. If
+		 *   <code>true</code>, this method doesn't fire key events for each
+		 *   characters. Otherwise key events for each character will be
+		 *   emulated.
+		 *
+		 * @see action.inputTo
+		 * @see action.appendTo
+		 * @see action.pasteTo
+		 * @see action.additionallyPasteTo
+		 */
+		inputTextToField : function(aElement, aInput, aIsAppend, aDontFireKeyEvents) 
 		{
 			if (!aElement) {
 				throw new Error('action.inputTextToField::no target!');
@@ -1943,14 +2007,14 @@ var action;
 				throw new Error('action.inputTextToField::['+aElement+'] is not an input field!');
 			}
 
-			if (!aAppend) aElement.value = '';
+			if (!aIsAppend) aElement.value = '';
 
-			if (!aDontFireKeyEvents && aValue) {
+			if (!aDontFireKeyEvents && aInput) {
 				var input = aElement;
 				if (input.localName == 'textbox') input = input.inputField;
 
-				var array = String(aValue || '').match(this._inputArrayPattern);
-				if (!array) array = String(aValue || '').split('');
+				var array = String(aInput || '').match(this._inputArrayPattern);
+				if (!array) array = String(aInput || '').split('');
 				array.forEach(function(aChar) {
 					if (this._directInputPattern.test(aChar)) {
 						this.fireKeyEventOnElement(input, {
@@ -1968,7 +2032,7 @@ var action;
 				}, this);
 			}
 			else {
-				aElement.value += (aValue || '');
+				aElement.value += (aInput || '');
 			}
 
 			var doc = this._getDocumentFromEventTarget(aElement);
@@ -1979,6 +2043,17 @@ var action;
    
 /* Operations for coordinates */ 
 	
+		/**
+		 * Finds the topmost window on the specified coordinates in the screen.
+		 *
+		 * @param {number} aScreenX (optional)
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY (optional)
+		 *   The Y coordinate on the screen.
+		 *
+		 * @return {nsIDOMWindow}
+		 *   The found window.
+		 */
 		_getWindowAt : function(aScreenX, aScreenY) 
 		{
 			var windows = this._WindowMediator.getZOrderDOMWindowEnumerator(null, true);
@@ -2070,7 +2145,7 @@ var action;
 			var popup = this._getPopupElementAt(aFrame, aScreenX, aScreenY);
 			if (popup) return popup;
 
-			var clientPos = this._getClientPointFromScreenPoint(aFrame, aScreenX, aScreenY);
+			var clientPos = this._calculateClientPointFromScreenPoint(aFrame, aScreenX, aScreenY);
 
 			var elem = aFrame.document.elementFromPoint(clientPos.x, clientPos.y);
 			if (
@@ -2097,6 +2172,22 @@ var action;
 		 */
 		getElementFromScreenPoint : function() { return this.getElementAt.apply(this, arguments); },
 	
+		/**
+		  * Finds a showing popup element from specified coordinates on the
+		  * screen.
+		  *
+		  * @param {nsIDOMWindow} aFrame
+		  *   The root frame (maybe a chrome window) which you want to find
+		  *   a popup from.
+		  * @param {number} aScreenX
+		  *   The X coordinate on the screen.
+		  * @param {number} aScreenY
+		  *   The Y coordinate on the screen.
+		  *
+		  * @return {?nsIDOMElement}
+		  *   The found popup element. If there is no popup, <code>null</code>
+		  *   will be returned.
+		  */
 		_getPopupElementAt : function(aFrame, aScreenX, aScreenY) 
 		{
 			var doc = aFrame.document;
@@ -2126,6 +2217,21 @@ var action;
 			return null;
 		},
  
+		/**
+		  * Finds the DOM element from specified coordinates on the screen.
+		  * If there are anonymous contents, this scans them recursively.
+		  *
+		  * @param {?nsIDOMElement} aElement
+		  *   The root element which you want to find a DOM element from.
+		  * @param {number} aScreenX
+		  *   The X coordinate on the screen.
+		  * @param {number} aScreenY
+		  *   The Y coordinate on the screen.
+		  *
+		  * @return {?nsIDOMElement}
+		  *   The found element. If there is no element, <code>null</code>
+		  *   will be returned.
+		  */
 		_getOriginalTargetAt : function(aElement, aScreenX, aScreenY) 
 		{
 			return this._getOriginalTargetAtInternal(aElement, aScreenX, aScreenY) || aElement;
@@ -2149,6 +2255,9 @@ var action;
 			return null;
 		},
   
+		/**
+		 * The filter for TreeWalker.
+		 */
 		_elementFilter : function(aNode) { 
 			return Ci.nsIDOMNodeFilter.FILTER_ACCEPT;
 		},
@@ -2205,11 +2314,25 @@ var action;
 			return this.getFrameAt.apply(this, arguments);
 		},
  
-		_getClientPointFromScreenPoint : function(aFrame, aScreenX, aScreenY) 
+		/**
+		 * Calculates relative coordinates based on a frame, from coordinates
+		 * on the screen.
+		 *
+		 * @param {nsIDOMWindow} aFrame
+		 *   The base to calculate relative coordinates.
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 *
+		 * @return {{x: number, y: number}}
+		 *   Relative coordinates based on the given frame.
+		 */
+		_calculateClientPointFromScreenPoint : function(aFrame, aScreenX, aScreenY) 
 		{
 			if (!aFrame ||
 				!(aFrame instanceof Ci.nsIDOMWindow))
-				throw new Error('action._getClientPointFromScreenPoint::['+aFrame+'] is not a frame!');
+				throw new Error('action._calculateClientPointFromScreenPoint::['+aFrame+'] is not a frame!');
 
 			var box = this.getBoxObjectFor(aFrame.document.documentElement);
 			return {
@@ -2218,6 +2341,25 @@ var action;
 			};
 		},
  
+		/**
+		 * Calculates relative coordinates and screen coordinates, if one of
+		 * them is not specified.
+		 *
+		 * @param {{x: number,
+		 *          y: number,
+		 *          screenX: number,
+		 *          screenY: number}} aOptions
+		 *   A hash which has relative coordinates or screen coordinates.
+		 * @param {nsIDOMWindow} aFrame
+		 *   The base to calculate relative coordinates.
+		 *
+		 * @return {{x: number,
+		 *           y: number,
+		 *           screenX: number,
+		 *           screenY: number}}
+		 *   A hash. All of properties except x, y, screenX and screenY are
+		 *   inherited from the given hash.
+		 */
 		_normalizeScreenAndClientPoint : function(aOptions, aFrame) 
 		{
 			if (!aFrame ||
@@ -2250,8 +2392,27 @@ var action;
 			aOptions.y = y;
 			aOptions.screenX = screenX;
 			aOptions.screenY = screenY;
+
+			return aOptions;
 		},
  
+		/**
+		 * Judges whether the point specified by given coordinates is in the
+		 * rectangle of the given box or not.
+		 *
+		 * @param {{screenX: number,
+		 *          screenY: number,
+		 *          width: number,
+		 *          height: number}} aBox
+		 *   The box which have properties same to nsIBoxObject.
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 *
+		 * @return {boolean}
+		 *   Whether the specified point is in the box or not.
+		 */
 		_isInside : function(aBox, aScreenX, aScreenY) 
 		{
 			var left   = aBox.screenX;
@@ -2268,6 +2429,15 @@ var action;
   
 /* utils */ 
 	
+		/**
+		 * Returns a nsIDOMWindowUtils for the given frame.
+		 *
+		 * @param {nsIDOMWindow} aFrame
+		 *   The target frame.
+		 *
+		 * @return {nsIDOMWindowUtils}
+		 *   The nsIDOMWindowUtils service for the frame.
+		 */
 		_getWindowUtils : function(aFrame) 
 		{
 			return aFrame
@@ -2275,6 +2445,15 @@ var action;
 					.getInterface(Ci.nsIDOMWindowUtils);
 		},
  
+		/**
+		 * Returns related nsIDOMDocument for the given DOM node.
+		 *
+		 * @param {nsIDOMNode} aNode
+		 *   The base node to find document.
+		 *
+		 * @return {nsIDOMDocument}
+		 *   The document related to the node.
+		 */
 		_getDocumentFromEventTarget : function(aNode) 
 		{
 			return !aNode ? null :
