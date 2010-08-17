@@ -295,19 +295,15 @@ var action;
 		leftClickOn : function() { return this.clickOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single middle click on a element. Parameters can be in
-		 * random order.
+		 * Emulates a single middle click on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		middleClickOn : function() 
 		{
@@ -316,19 +312,15 @@ var action;
 		},
  
 		/**
-		 * Emulates a single right click on a element. Parameters can be in
-		 * random order.
+		 * Emulates a single right click on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		rightClickOn : function() 
 		{
@@ -339,8 +331,8 @@ var action;
 // dblclick on element 
 	
 		/**
-		 * Emulates a double left click on a element. Parameters can be in
-		 * random order.
+		 * Emulates a double left click on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.doubleclickOn (alias)
@@ -352,13 +344,9 @@ var action;
 		 * @see action.leftDblclickOn (alias)
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		doubleClickOn : function() 
 		{
@@ -381,8 +369,8 @@ var action;
 		leftDblclickOn : function() { return this.doubleClickOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a double middle click on a element. Parameters can be in
-		 * random order.
+		 * Emulates a double middle click on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.middleDoubleclickOn (alias)
@@ -390,13 +378,9 @@ var action;
 		 * @see action.middleDblclickOn (alias)
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		middleDoubleClickOn : function() 
 		{
@@ -411,8 +395,8 @@ var action;
 		middleDblclickOn : function() { return this.middleDoubleClickOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a double right click on a element. Parameters can be in
-		 * random order.
+		 * Emulates a double right click on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.rightDoubleclickOn (alias)
@@ -420,13 +404,9 @@ var action;
 		 * @see action.rightDblclickOn (alias)
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		rightDoubleClickOn : function() 
 		{
@@ -443,8 +423,8 @@ var action;
 // mousedown/mouseup on element 
 	
 		/**
-		 * Emulates a single left mouse down on a element. Parameters can be in
-		 * random order.
+		 * Emulates a single left mouse down on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.mousedownOn (alias)
@@ -452,13 +432,9 @@ var action;
 		 * @see action.leftMousedownOn (alias)
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		mouseDownOn : function() 
 		{
@@ -473,20 +449,16 @@ var action;
 		leftMousedownOn : function() { return this.mouseDownOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single middle mouse down on a element. Parameters can be
-		 * in random order.
+		 * Emulates a single middle mouse down on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.middleMousedownOn (alias)
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		middleMouseDownOn : function() 
 		{
@@ -497,20 +469,16 @@ var action;
 		middleMousedownOn : function() { return this.middleMouseDownOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single right mouse down on a element. Parameters can be
-		 * in random order.
+		 * Emulates a single right mouse down on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.rightMousedownOn (alias)
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		rightMouseDownOn : function() 
 		{
@@ -521,8 +489,8 @@ var action;
 		rightMousedownOn : function() { return this.rightMouseDownOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single left mouse up on a element. Parameters can be in
-		 * random order.
+		 * Emulates a single left mouse up on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.mouseupOn (alias)
@@ -530,13 +498,9 @@ var action;
 		 * @see action.leftMouseupOn (alias)
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		mouseUpOn : function() 
 		{
@@ -551,20 +515,16 @@ var action;
 		leftMouseupOn : function() { return this.mouseUpOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single middle mouse up on a element. Parameters can be in
-		 * random order.
+		 * Emulates a single middle mouse up on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.middleMouseupOn (alias)
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		middleMouseUpOn : function() 
 		{
@@ -575,20 +535,16 @@ var action;
 		middleMouseupOn : function() { return this.middleMouseUpOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single right mouse up on a element. Parameters can be in
-		 * random order.
+		 * Emulates a single right mouse up on a element. Parameters are just
+		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.rightMouseupOn (alias)
 		 *
 		 * @param {nsIDOMElement} aTarget
-		 *   The target element which you want to send generated event.
-		 * @param {{altKey: boolean,
-		 *          ctrlKey: boolean,
-		 *          metaKey: boolean,
-		 *          shiftKey: boolean}=} aModifiers (optional)
-		 *   A hash of modifier keys. Default value of each key is
-		 *   <code>false</code>.
+		 *   The target element.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
 		 */
 		rightMouseUpOn : function() 
 		{
@@ -600,19 +556,68 @@ var action;
   
 // click at position 
 	
+		/**
+		 * Emulates a single left click at the coordinates on the screen.
+		 * Parameters can be in random order.
+		 *
+		 * @see action.leftClickAt (alias)
+		 *
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 * @param {nsIDOMWindow=} aRootFrame (optional)
+		 *   The root frame which you want to find the target frame from.
+		 * @param {{altKey: boolean,
+		 *          ctrlKey: boolean,
+		 *          metaKey: boolean,
+		 *          shiftKey: boolean}=} (optional)
+		 *   A hash of modifier keys.
+		 */
 		clickAt : function() 
 		{
 			var options = this._getMouseOptionsFor('click', 0, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// leftClickAt
+		/** @see action.clickAt */
+		leftClickAt : function() { return this.clickAt.apply(this, arguments); },
  
+		/**
+		 * Emulates a single middle click at the coordinates on the screen.
+		 * Parameters are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 *
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 * @param {nsIDOMWindow=} aRootFrame (optional)
+		 *   The root frame.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		middleClickAt : function() 
 		{
 			var options = this._getMouseOptionsFor('click', 1, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
  
+		/**
+		 * Emulates a single right click at the coordinates on the screen.
+		 * Parameters are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 *
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 * @param {nsIDOMWindow=} aRootFrame (optional)
+		 *   The root frame.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		rightClickAt : function() 
 		{
 			var options = this._getMouseOptionsFor('click', 2, arguments);
@@ -621,27 +626,107 @@ var action;
   
 // dblclick at position 
 	
+		/**
+		 * Emulates a double left click at the coordinates on the screen.
+		 * Parameters are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.doubleclickAt (alias)
+		 * @see action.dblClickAt (alias)
+		 * @see action.dblclickAt (alias)
+		 * @see action.leftDoubleClickAt (alias)
+		 * @see action.leftDoubleclickAt (alias)
+		 * @see action.leftDblClickAt (alias)
+		 * @see action.leftDblclickAt (alias)
+		 *
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 * @param {nsIDOMWindow=} aRootFrame (optional)
+		 *   The root frame.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		doubleClickAt : function() 
 		{
 			var options = this._getMouseOptionsFor('dblclick', 0, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// doubleclickAt, dblClickAt, dblclickAt,
-		// leftDoubleClickAt, leftDoubleclickAt
+		/** @see action.doubleClickAt */
+		doubleclickAt : function() { return this.doubleClickAt.apply(this, arguments); },
+		/** @see action.doubleClickAt */
+		dblClickAt : function() { return this.doubleClickAt.apply(this, arguments); },
+		/** @see action.doubleClickAt */
+		dblclickAt : function() { return this.doubleClickAt.apply(this, arguments); },
+		/** @see action.doubleClickAt */
+		leftDoubleClickAt : function() { return this.doubleClickAt.apply(this, arguments); },
+		/** @see action.doubleClickAt */
+		leftDoubleclickAt : function() { return this.doubleClickAt.apply(this, arguments); },
+		/** @see action.doubleClickAt */
+		leftDblClickAt : function() { return this.doubleClickAt.apply(this, arguments); },
+		/** @see action.doubleClickAt */
+		leftDblclickAt : function() { return this.doubleClickAt.apply(this, arguments); },
  
+		/**
+		 * Emulates a double middle click at the coordinates on the screen.
+		 * Parameters are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.middleDoubleclickAt (alias)
+		 * @see action.middleDblClickAt (alias)
+		 * @see action.middleDblclickAt (alias)
+		 *
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 * @param {nsIDOMWindow=} aRootFrame (optional)
+		 *   The root frame.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		middleDoubleClickAt : function() 
 		{
 			var options = this._getMouseOptionsFor('dblclick', 1, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// middleDoubleclickAt, middleDblClickAt, middleDblclickAt
+		/** @see action.middleDoubleClickAt */
+		middleDoubleclickAt : function() { return this.middleDoubleClickAt.apply(this, arguments); },
+		/** @see action.middleDoubleClickAt */
+		middleDblClickAt : function() { return this.middleDoubleClickAt.apply(this, arguments); },
+		/** @see action.middleDoubleClickAt */
+		middleDblclickAt : function() { return this.middleDoubleClickAt.apply(this, arguments); },
  
+		/**
+		 * Emulates a double right click at the coordinates on the screen.
+		 * Parameters are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.rightDoubleclickAt (alias)
+		 * @see action.rightDblClickAt (alias)
+		 * @see action.rightDblclickAt (alias)
+		 *
+		 * @param {number} aScreenX
+		 *   The X coordinate on the screen.
+		 * @param {number} aScreenY
+		 *   The Y coordinate on the screen.
+		 * @param {nsIDOMWindow=} aRootFrame (optional)
+		 *   The root frame.
+		 * @param {Object=} aModifiers (optional)
+		 *   A hash of modifier keys.
+		 */
 		rightDoubleClickAt : function() 
 		{
 			var options = this._getMouseOptionsFor('dblclick', 2, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// rightDoubleclickAt, rightDblClickAt, rightDblclickAt
+		/** @see action.rightDoubleClickAt */
+		rightDoubleclickAt : function() { return this.rightDoubleClickAt.apply(this, arguments); },
+		/** @see action.rightDoubleClickAt */
+		rightDblClickAt : function() { return this.rightDoubleClickAt.apply(this, arguments); },
+		/** @see action.rightDoubleClickAt */
+		rightDblclickAt : function() { return this.rightDoubleClickAt.apply(this, arguments); },
   
 // mousedown/mouseup at position 
 	
