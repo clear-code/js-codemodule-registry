@@ -1,7 +1,7 @@
 /**
  * @fileOverview User Action Emulator for Firefox 3.5 or later 
  * @author       ClearCode Inc.
- * @version      .0
+ * @version      2
  *
  * @example
  *   Components.utils.import('resource://my-modules/action.jsm');
