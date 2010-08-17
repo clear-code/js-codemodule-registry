@@ -1,7 +1,7 @@
 /**
  * @fileOverview User Action Emulator for Firefox 3.5 or later 
  * @author       ClearCode Inc.
- * @version      1.0
+ * @version      2.0
  *
  * @example
  *   Components.utils.import('resource://my-modules/action.jsm');
@@ -40,7 +40,7 @@ if (typeof namespace == 'undefined') {
  
 var action; 
 (function() {
-	const currentRevision = 1;
+	const currentRevision = 2;
 
 	var loadedRevision = 'action' in namespace ?
 			namespace.action.revision :
@@ -162,6 +162,9 @@ var action;
 		 *   Options normalized to a hash. "x" and "y" will be relative
 		 *   coordinates from the window edge, if no frame is given and there
 		 *   is a frame on the given coordinates on the screen.
+		 *
+		 * @see action.fireMouseEvent
+		 * @see action.fireMouseEventOnElement
 		 */
 		_getMouseOptionsFor : function(aType, aButton, aArguments) 
 		{
@@ -189,7 +192,8 @@ var action;
  
 		/**
 		 * Extracts options from the given arguments array and returns them
-		 * as a normalized hash. Options can be in random order.
+		 * as a normalized hash for fireMouseEvent and
+		 * fireMouseEventOnElement. Options can be in random order.
 		 *
 		 * @param {number=} aScreenX (optional)
 		 *   The X coordinate on the screen.
@@ -224,6 +228,9 @@ var action;
 		 *   Options normalized to a hash. "x" and "y" will be relative
 		 *   coordinates from the window edge, if no frame is given and there
 		 *   is a frame on the given coordinates on the screen.
+		 *
+		 * @see action.fireMouseEvent
+		 * @see action.fireMouseEventOnElement
 		 */
 		_getMouseOptionsFromArguments : function() 
 		{
@@ -253,7 +260,7 @@ var action;
 
 			let screenX, screenY;
 			if (!w && x !== void(0) && y !== void(0)) {
-				w = this._getWindowFromScreenPoint(x, y);
+				w = this._getWindowAt(x, y);
 				w = this.getFrameFromScreenPoint(w, x, y);
 				let root = this.getBoxObjectFor(w.document.documentElement);
 				screenX = x;
@@ -289,8 +296,6 @@ var action;
 		 * Emulates a single left click on a element. Options can be in
 		 * random order.
 		 *
-		 * @see action.leftClickOn (alias)
-		 *
 		 * @param {nsIDOMElement} aElement
 		 *   The target element which you want to send created event.
 		 * @param {{altKey: boolean,
@@ -299,6 +304,8 @@ var action;
 		 *          shiftKey: boolean}=} aModifiers (optional)
 		 *   A hash of modifier keys. Default value of each key is
 		 *   <code>false</code>.
+		 *
+		 * @see action.leftClickOn (alias)
 		 */
 		clickOn : function() 
 		{
@@ -519,8 +526,6 @@ var action;
 		 * Emulates a single left click at the coordinates on the screen.
 		 * Options can be in random order.
 		 *
-		 * @see action.leftClickAt (alias)
-		 *
 		 * @param {number} aScreenX
 		 *   The X coordinate on the screen.
 		 * @param {number} aScreenY
@@ -535,6 +540,8 @@ var action;
 		 *          shiftKey: boolean}=} (optional)
 		 *   A hash of modifier keys. Default value of each key is
 		 *   <code>false</code>.
+		 *
+		 * @see action.leftClickAt (alias)
 		 */
 		clickAt : function() 
 		{
@@ -860,12 +867,14 @@ var action;
 		},
 	
 		/**
-		 * Emulate side-effects of a click action on a XUL element.
+		 * Emulate side-effects of a mouse operation on a XUL element.
 		 *
 		 * @param {nsIDOMElement} aElement
 		 *   A XUL element.
 		 * @param {Object=} aOptions (optional)
 		 *   A hash, options for fireMouseEvent.
+		 *
+		 * @see action.fireMouseEvent
 		 */
 		_emulateClickOnXULElement : function(aElement, aOptions) 
 		{
@@ -994,6 +1003,9 @@ var action;
 		 *
 		 * @return {nsIDOMElement}
 		 *   A DOM mouse event.
+		 *
+		 * @see action.fireMouseEvent
+		 * @see action.fireMouseEventOnElement
 		 */
 		_createMouseEventOnElement : function(aElement, aOptions) 
 		{
@@ -1043,6 +1055,8 @@ var action;
 		 *           screenY: number}}
 		 *   A hash, options for fireMouseEventOnElement. All of properties
 		 *   except x, y, screenX and screenY are inherited from the given hash.
+		 *
+		 * @see action.fireMouseEventOnElement
 		 */
 		_calculateCoordinatesFromElement : function(aOptions, aElement) 
 		{
@@ -1289,6 +1303,8 @@ var action;
 		 *           ctrlKey: boolean,
 		 *           metaKey: boolean,
 		 *           shiftKey: boolean}}}
+		 *
+		 * @see action.fireKeyEventOnElement
 		 */
 		_getKeyOptionsFromArguments : function() 
 		{
@@ -1351,8 +1367,6 @@ var action;
 		 * Emulates a single key press on a element. Options can be in
 		 * random order.
 		 *
-		 * @see action.keypressOn (alias)
-		 *
 		 * @param {nsIDOMElement} aElement
 		 *   The target element which you want to send created event.
 		 * @param {number=} aKeyCode (optional)
@@ -1366,6 +1380,8 @@ var action;
 		 *          shiftKey: boolean}=} aModifiers (optional)
 		 *   A hash of modifier keys. Default value of each key is
 		 *   <code>false</code>.
+		 *
+		 * @see action.keypressOn (alias)
 		 */
 		keyPressOn : function() 
 		{
@@ -1503,6 +1519,8 @@ var action;
 		 *
 		 * @return {nsIDOMElement}
 		 *   A DOM keyboard event.
+		 *
+		 * @see action.fireKeyEventOnElement
 		 */
 		_createKeyEventOnElement : function(aElement, aOptions) 
 		{
@@ -1539,12 +1557,14 @@ var action;
 		},
  
 		/**
-		 * Emulate side-effects of keyboard events on a XUL element.
+		 * Emulate side-effects of a keyboard operation on a XUL element.
 		 *
 		 * @param {nsIDOMElement} aElement
 		 *   A XUL element.
 		 * @param {Object=} aOptions (optional)
 		 *   A hash, options for fireKeyEventOnElement.
+		 *
+		 * @see action.fireKeyEventOnElement
 		 */
 		_emulateEnterOnXULElement : function(aElement, aOptions) 
 		{
@@ -1562,6 +1582,22 @@ var action;
     
 /* XULCommand event */ 
 	
+		/**
+		 * Dispatches a XULCommandEvent from a XUL element on the coordinates
+		 * in the screen. This does nothing if the source event is not a single
+		 * left click, if the target is not an element which can dispatch
+		 * XULCommandEvent, or if the target is disabled.
+		 *
+		 * @param {nsIDOMWindow} aFrame
+		 *   The target frame to send a XULCommandEvent event.
+		 * @param {Object=} aOptions (optional)
+		 *   A hash, options for fireMouseEvent.
+		 *
+		 * @return {boolean}
+		 *   A XULCommandEvent is fired or not.
+		 *
+		 * @see action.fireMouseEvent
+		 */
 		fireXULCommandEvent : function(aFrame, aOptions) 
 		{
 			if (!aFrame ||
@@ -1576,6 +1612,25 @@ var action;
 			return this.fireXULCommandEventOnElement(node, aOptions);
 		},
  
+		/**
+		 * Dispatches a XULCommandEvent from a XUL element on the coordinates
+		 * in the screen. This does nothing if the source event is not a single
+		 * left click or a keypress from the "Enter" key, if the target is not
+		 * an element which can dispatch XULCommandEvent, or if the target is
+		 * disabled.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element to send a XULCommandEvent event.
+		 * @param {Object=} aOptions (optional)
+		 *   A hash, options for fireMouseEventOnElement or
+		 *   fireKeyEventOnElement.
+		 *
+		 * @return {boolean}
+		 *   A XULCommandEvent is fired or not.
+		 *
+		 * @see action.fireMouseEventOnElement
+		 * @see action.fireKeyEventOnElement
+		 */
 		fireXULCommandEventOnElement : function(aElement, aOptions) 
 		{
 			if (!aElement ||
@@ -1604,6 +1659,15 @@ var action;
 			return false;
 		},
 	
+		/**
+		 * Creates a XULCommandEvent for a source event.
+		 *
+		 * @param {nsIDOMEvent} aSourceEvent
+		 *   A source event which is a keyboard event or a mouse event.
+		 *
+		 * @return {nsIDOMXULCommandEvent}
+		 *   The created XULCommandEvent.
+		 */
 		_createXULCommandEvent : function(aSourceEvent) 
 		{
 			var event = aSourceEvent.view.document.createEvent('XULCommandEvents');
@@ -1621,6 +1685,18 @@ var action;
 			return event;
 		},
   
+		/**
+		 * Finds the nearest parent element which can dispatch XULCommandEvent
+		 * from the given XUL element. XULCommandEvent is fired only from XUL
+		 * elements: button, menuitem, checkbox, radio, tab, or toolbarbutton
+		 * which is not "menu" type.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   A XUL element.
+		 *
+		 * @return {?nsIDOMElement}
+		 *   The found XUL element or <code>null</code>.
+		 */
 		_getXULCommandEventDispatcher : function(aElement) 
 		{
 			return aElement.ownerDocument.evaluate(
@@ -1635,6 +1711,18 @@ var action;
 				).singleNodeValue;
 		},
  
+		/**
+		 * Finds the nearest parent element which can dispatch keyboard events
+		 * from the given XUL element. Keyboard event is fired only from XUL
+		 * elements: button, menuitem, checkbox, radio, tab, textbox, or
+		 * toolbarbutton which is not "menu" type.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   A XUL element.
+		 *
+		 * @return {?nsIDOMElement}
+		 *   The found XUL element or <code>null</code>.
+		 */
 		_getXULKeyEventDispatcher : function(aElement) 
 		{
 			return aElement.ownerDocument.evaluate(
@@ -1649,6 +1737,24 @@ var action;
 				).singleNodeValue;
 		},
  
+		/**
+		 * Emulate side-effects of a keyboard operation or a mouse operation
+		 * on a XUL element.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   A XUL element.
+		 * @param {Object=} aOptions (optional)
+		 *   A hash, options for fireMouseEvent, fireMouseEventOnElement, or
+		 *   fireKeyEventOnElement.
+		 * @param {boolean=} aIsSimpleGesture (optional)
+		 *   Whether the source action possibly fires XULCommandEvent.
+		 *   XULCommandEvent can be fired from single left clicks or keypress
+		 *   from "Enter" key.
+		 *
+		 * @see action.fireMouseEvent
+		 * @see action.fireMouseEventOnElement
+		 * @see action.fireKeyEventOnElement
+		 */
 		_emulateActionOnXULElement : function(aElement, aOptions, aIsSimpleGesture) 
 		{
 			if (!aElement) return;
@@ -1757,10 +1863,24 @@ var action;
 	
 // utils 
 	
-		_getInputOptionsFor : function(aArguments) 
+		/**
+		 * Returns given options as a normalized hash for
+		 * inputTextToField. Options can be in random order.
+		 *
+		 * @param {nsIDOMElement} aElement
+		 *   The target element which you want to send input event.
+		 * @param {string=} aInput (optional)
+		 *   A string to be input.
+		 *
+		 * @return {{input: string,
+		 *           element: nsIDOMElement}}}
+		 *
+		 * @see action.inputTextToField
+		 */
+		_getInputOptionsFromArguments : function() 
 		{
 			var input, element;
-			Array.slice(aArguments).some(function(aArg) {
+			Array.slice(arguments).some(function(aArg) {
 				if (typeof aArg == 'string') {
 					input = aArg;
 				}
@@ -1775,25 +1895,25 @@ var action;
   
 		inputTo : function() 
 		{
-			var options = this._getInputOptionsFor(arguments);
+			var options = this._getInputOptionsFromArguments.apply(this, arguments);
 			this.inputTextToField(options.element, options.input);
 		},
  
 		appendTo : function() 
 		{
-			var options = this._getInputOptionsFor(arguments);
+			var options = this._getInputOptionsFromArguments.apply(this, arguments);
 			this.inputTextToField(options.element, options.input, true);
 		},
  
 		pasteTo : function() 
 		{
-			var options = this._getInputOptionsFor(arguments);
+			var options = this._getInputOptionsFromArguments.apply(this, arguments);
 			this.inputTextToField(options.element, options.input, false, true);
 		},
  
 		additionallyPasteTo : function() 
 		{
-			var options = this._getInputOptionsFor(arguments);
+			var options = this._getInputOptionsFromArguments.apply(this, arguments);
 			this.inputTextToField(options.element, options.input, true, true);
 		},
  
@@ -1859,7 +1979,7 @@ var action;
    
 /* Operations for coordinates */ 
 	
-		_getWindowFromScreenPoint : function(aScreenX, aScreenY) 
+		_getWindowAt : function(aScreenX, aScreenY) 
 		{
 			var windows = this._WindowMediator.getZOrderDOMWindowEnumerator(null, true);
 			if (windows.hasMoreElements()) {
@@ -1874,7 +1994,7 @@ var action;
 						}, aScreenX, aScreenY))
 						return w;
 				}
-				throw new Error('action._getWindowFromScreenPoint:: there is no window at '+aScreenX+', '+aScreenY+'!');
+				throw new Error('action._getWindowAt:: there is no window at '+aScreenX+', '+aScreenY+'!');
 			}
 			// By the bug 156333, we cannot find windows by their Z order on Linux.
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=156333
@@ -1899,12 +2019,12 @@ var action;
 					return youngest;
 				}, this);
 			if (youngest) return youngest;
-			throw new Error('action._getWindowFromScreenPoint:: there is no window at '+aScreenX+', '+aScreenY+'!');
+			throw new Error('action._getWindowAt:: there is no window at '+aScreenX+', '+aScreenY+'!');
 		},
-		_getFrameAndScreenPointFromArguments : function(aArguments)
+		_getFrameAndScreenPointFromArguments : function()
 		{
 			var w, x, y;
-			Array.slice(aArguments).some(function(aArg) {
+			Array.slice(arguments).some(function(aArg) {
 				if (typeof aArg == 'number') {
 					if (x === void(0))
 						x = aArg;
@@ -1918,7 +2038,7 @@ var action;
 				return (x !== void(0) && y !== void(0));
 			});
 			if (!w)
-				w = this._getWindowFromScreenPoint(x, y);
+				w = this._getWindowAt(x, y);
 			return [w, x, y];
 		},
  
@@ -1937,15 +2057,17 @@ var action;
 		  * @return {?nsIDOMElement}
 		  *   The found element. If there is no DOM element, <code>null</code>
 		  *   will be returned.
+		  *
+		  * @see action.getElementFromScreenPoint (alias)
 		  */
-		getElementFromScreenPoint : function() 
+		getElementAt : function() 
 		{
-			var [aFrame, aScreenX, aScreenY] = this._getFrameAndScreenPointFromArguments(arguments);
+			var [aFrame, aScreenX, aScreenY] = this._getFrameAndScreenPointFromArguments.apply(this, arguments);
 			if (!aFrame ||
 				!(aFrame instanceof Ci.nsIDOMWindow))
 				throw new Error('action.getElementFromScreenPoint::['+aFrame+'] is not a frame!');
 
-			var popup = this._getPopupElementFromScreenPoint(aFrame, aScreenX, aScreenY);
+			var popup = this._getPopupElementAt(aFrame, aScreenX, aScreenY);
 			if (popup) return popup;
 
 			var clientPos = this._getClientPointFromScreenPoint(aFrame, aScreenX, aScreenY);
@@ -1964,12 +2086,18 @@ var action;
 						aScreenX + aFrame.scrollX,
 						aScreenY + aFrame.scrollY
 					);
-				return this._getOriginalTargetFromScreenPoint(node, aScreenX, aScreenY);
+				return this._getOriginalTargetAt(node, aScreenX, aScreenY);
 			}
-			return this._getOriginalTargetFromScreenPoint(elem, aScreenX, aScreenY);
+			return this._getOriginalTargetAt(elem, aScreenX, aScreenY);
 		},
+		/**
+		 * An alias for getElementAt. This is retained for backward compatibility.
+		 *
+		 * @see action.getElementAt
+		 */
+		getElementFromScreenPoint : function() { return this.getElementAt.apply(this, arguments); },
 	
-		_getPopupElementFromScreenPoint : function(aFrame, aScreenX, aScreenY) 
+		_getPopupElementAt : function(aFrame, aScreenX, aScreenY) 
 		{
 			var doc = aFrame.document;
 			var popups = doc.evaluate(
@@ -1993,17 +2121,17 @@ var action;
 						nodes.push(node);
 				}
 				if (!nodes.length) continue;
-				return this._getOriginalTargetFromScreenPoint(nodes[nodes.length-1], aScreenX, aScreenY);
+				return this._getOriginalTargetAt(nodes[nodes.length-1], aScreenX, aScreenY);
 			}
 			return null;
 		},
  
-		_getOriginalTargetFromScreenPoint : function(aElement, aScreenX, aScreenY) 
+		_getOriginalTargetAt : function(aElement, aScreenX, aScreenY) 
 		{
-			return this._getOriginalTargetFromScreenPointInternal(aElement, aScreenX, aScreenY) || aElement;
+			return this._getOriginalTargetAtInternal(aElement, aScreenX, aScreenY) || aElement;
 		},
 	
-		_getOriginalTargetFromScreenPointInternal : function(aElement, aScreenX, aScreenY) 
+		_getOriginalTargetAtInternal : function(aElement, aScreenX, aScreenY) 
 		{
 			if (!aElement) return null;
 			var doc = aElement.ownerDocument;
@@ -2015,7 +2143,7 @@ var action;
 				if (nodes[i].nodeType != nodes[i].ELEMENT_NODE ||
 					!this._isInside(this.getBoxObjectFor(nodes[i]), aScreenX, aScreenY))
 					continue;
-				var node = this._getOriginalTargetFromScreenPointInternal(nodes[i], aScreenX, aScreenY);
+				var node = this._getOriginalTargetAtInternal(nodes[i], aScreenX, aScreenY);
 				if (node) return node;
 			}
 			return null;
@@ -2030,8 +2158,6 @@ var action;
 		 * specify aRootFrame before coordinates as:
 		 * <code>getFrameFromScreenPoint(aRootFrame, aScreenX, aScreenY)</code>.
 		 *
-		 * @see action.getWindowFromScreenPoint (alias, deprecated)
-		 *
 		 * @param {number} aScreenX
 		 *   The X coordinate on the screen.
 		 * @param {number} aScreenY
@@ -2044,27 +2170,41 @@ var action;
 		 * @return {?nsIDOMWindow}
 		 *   The found frame. If there is no frame, <code>null</code> will be
 		 *   returned.
+		 *
+		 * @see action.getFrameFromScreenPoint (alias)
+		 * @see action.getWindowFromScreenPoint (alias, deprecated)
 		 */
-		getFrameFromScreenPoint : function() 
+		getFrameAt : function() 
 		{
-			var [aFrame, aScreenX, aScreenY] = this._getFrameAndScreenPointFromArguments(arguments);
+			var [aFrame, aScreenX, aScreenY] = this._getFrameAndScreenPointFromArguments.apply(this, arguments);
 			if (!aFrame ||
 				!(aFrame instanceof Ci.nsIDOMWindow))
 				throw new Error('action.getFrameFromScreenPoint::['+aFrame+'] is not a frame!');
 
-			var elem = this.getElementFromScreenPoint(aFrame, aScreenX, aScreenY);
+			var elem = this.getElementAt(aFrame, aScreenX, aScreenY);
 			return elem ? elem.ownerDocument.defaultView : null ;
 		},
 		/**
-		 * @deprecated Use action.getFrameFromScreenPoint().
-		 * @see action.getFrameFromScreenPoint
+		 * An alias for getFrameAt. This is retained for backward compatibility.
+		 *
+		 * @see action.getFrameAt
+		 */
+		getFrameFromScreenPoint : function()
+		{
+			return this.getFrameAt.apply(this, arguments);
+		},
+		/**
+		 * An alias for getFrameAt. This is retained for backward compatibility.
+		 *
+		 * @deprecated Use action.getFrameAt().
+		 *
+		 * @see action.getFrameAt
 		 */
 		getWindowFromScreenPoint : function()
 		{
-			return this.getFrameFromScreenPoint.apply(this, arguments);
+			return this.getFrameAt.apply(this, arguments);
 		},
-	
-  
+ 
 		_getClientPointFromScreenPoint : function(aFrame, aScreenX, aScreenY) 
 		{
 			if (!aFrame ||
