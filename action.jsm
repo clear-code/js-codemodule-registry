@@ -137,16 +137,14 @@ var action;
 // utils 
 	
 		/**
-		 * Returns parameters as a normalized hash.
+		 * Returns given options as a normalized hash.
 		 *
 		 * @param {string} aEventType
 		 *   The event type of the mouse event.
 		 * @param {number} aButton
 		 *   The button related to the mouse event. 0=left, 1=middle, 2=right.
 		 * @param {Array=} aOptions (optional)
-		 *   The root frame (maybe a chrome window) which you want to find
-		 *   the target frame from. If you didn't specify this option, this
-		 *   finds frames from the topmost window on the specified coordinates.
+		 *   An array of options for _getMouseOptionsFromArguments.
 		 *
 		 * @return {{type: string,
 		 *           button: number,
@@ -183,8 +181,8 @@ var action;
 		},
  
 		/**
-		 * Extracts parameters from an arguments array and returns them as
-		 * a normalized hash. Parameters can be in random order.
+		 * Extracts options from the given arguments array and returns them
+		 * as a normalized hash. Options can be in random order.
 		 *
 		 * @param {number=} aScreenX (optional)
 		 *   The X coordinate on the screen.
@@ -194,7 +192,7 @@ var action;
 		 *   The root frame (maybe a chrome window) which you want to find
 		 *   the target frame from. If you didn't specify this option, this
 		 *   finds frames from the topmost window on the specified coordinates.
-		 * @param {nsIDOMElement=} aTargetElement (optional)
+		 * @param {nsIDOMElement=} aElement (optional)
 		 *   The target element which you want to send generated event.
 		 * @param {{alt: boolean, altKey: boolean,
 		 *          ctrl: boolean, ctrlKey: boolean,
@@ -272,12 +270,12 @@ var action;
 // click on element 
 	
 		/**
-		 * Emulates a single left click on a element. Parameters can be in
+		 * Emulates a single left click on a element. Options can be in
 		 * random order.
 		 *
 		 * @see action.leftClickOn (alias)
 		 *
-		 * @param {nsIDOMElement} aTarget
+		 * @param {nsIDOMElement} aElement
 		 *   The target element which you want to send generated event.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
@@ -295,15 +293,10 @@ var action;
 		leftClickOn : function() { return this.clickOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single middle click on a element. Parameters are just
+		 * Emulates a single middle click on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		middleClickOn : function() 
 		{
@@ -312,15 +305,10 @@ var action;
 		},
  
 		/**
-		 * Emulates a single right click on a element. Parameters are just
+		 * Emulates a single right click on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		rightClickOn : function() 
 		{
@@ -331,7 +319,7 @@ var action;
 // dblclick on element 
 	
 		/**
-		 * Emulates a double left click on a element. Parameters are just
+		 * Emulates a double left click on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
@@ -342,11 +330,6 @@ var action;
 		 * @see action.leftDoubleClickOn (alias)
 		 * @see action.leftDblClickOn (alias)
 		 * @see action.leftDblclickOn (alias)
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		doubleClickOn : function() 
 		{
@@ -369,18 +352,13 @@ var action;
 		leftDblclickOn : function() { return this.doubleClickOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a double middle click on a element. Parameters are just
+		 * Emulates a double middle click on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.middleDoubleclickOn (alias)
 		 * @see action.middleDblClickOn (alias)
 		 * @see action.middleDblclickOn (alias)
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		middleDoubleClickOn : function() 
 		{
@@ -395,18 +373,13 @@ var action;
 		middleDblclickOn : function() { return this.middleDoubleClickOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a double right click on a element. Parameters are just
+		 * Emulates a double right click on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.rightDoubleclickOn (alias)
 		 * @see action.rightDblClickOn (alias)
 		 * @see action.rightDblclickOn (alias)
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		rightDoubleClickOn : function() 
 		{
@@ -423,18 +396,13 @@ var action;
 // mousedown/mouseup on element 
 	
 		/**
-		 * Emulates a single left mouse down on a element. Parameters are just
+		 * Emulates a single left mouse down on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.mousedownOn (alias)
 		 * @see action.leftMouseDownOn (alias)
 		 * @see action.leftMousedownOn (alias)
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		mouseDownOn : function() 
 		{
@@ -449,16 +417,11 @@ var action;
 		leftMousedownOn : function() { return this.mouseDownOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single middle mouse down on a element. Parameters are just
+		 * Emulates a single middle mouse down on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.middleMousedownOn (alias)
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		middleMouseDownOn : function() 
 		{
@@ -469,16 +432,11 @@ var action;
 		middleMousedownOn : function() { return this.middleMouseDownOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single right mouse down on a element. Parameters are just
+		 * Emulates a single right mouse down on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.rightMousedownOn (alias)
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		rightMouseDownOn : function() 
 		{
@@ -489,18 +447,13 @@ var action;
 		rightMousedownOn : function() { return this.rightMouseDownOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single left mouse up on a element. Parameters are just
+		 * Emulates a single left mouse up on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.mouseupOn (alias)
 		 * @see action.leftMouseUpOn (alias)
 		 * @see action.leftMouseupOn (alias)
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		mouseUpOn : function() 
 		{
@@ -515,16 +468,11 @@ var action;
 		leftMouseupOn : function() { return this.mouseUpOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single middle mouse up on a element. Parameters are just
+		 * Emulates a single middle mouse up on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.middleMouseupOn (alias)
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		middleMouseUpOn : function() 
 		{
@@ -535,16 +483,11 @@ var action;
 		middleMouseupOn : function() { return this.middleMouseUpOn.apply(this, arguments); },
  
 		/**
-		 * Emulates a single right mouse up on a element. Parameters are just
+		 * Emulates a single right mouse up on a element. Options are just
 		 * same to action.clickOn.
 		 *
 		 * @see action.clickOn
 		 * @see action.rightMouseupOn (alias)
-		 *
-		 * @param {nsIDOMElement} aTarget
-		 *   The target element.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		rightMouseUpOn : function() 
 		{
@@ -558,7 +501,7 @@ var action;
 	
 		/**
 		 * Emulates a single left click at the coordinates on the screen.
-		 * Parameters can be in random order.
+		 * Options can be in random order.
 		 *
 		 * @see action.leftClickAt (alias)
 		 *
@@ -567,12 +510,15 @@ var action;
 		 * @param {number} aScreenY
 		 *   The Y coordinate on the screen.
 		 * @param {nsIDOMWindow=} aRootFrame (optional)
-		 *   The root frame which you want to find the target frame from.
+		 *   The root frame (maybe a chrome window) which you want to find
+		 *   the target frame from. If you didn't specify this option, this
+		 *   finds frames from the topmost window on the specified coordinates.
 		 * @param {{altKey: boolean,
 		 *          ctrlKey: boolean,
 		 *          metaKey: boolean,
 		 *          shiftKey: boolean}=} (optional)
-		 *   A hash of modifier keys.
+		 *   A hash of modifier keys. Default value of each key is
+		 *   <code>false</code>.
 		 */
 		clickAt : function() 
 		{
@@ -584,18 +530,9 @@ var action;
  
 		/**
 		 * Emulates a single middle click at the coordinates on the screen.
-		 * Parameters are just same to action.clickAt.
+		 * Options are just same to action.clickAt.
 		 *
 		 * @see action.clickAt
-		 *
-		 * @param {number} aScreenX
-		 *   The X coordinate on the screen.
-		 * @param {number} aScreenY
-		 *   The Y coordinate on the screen.
-		 * @param {nsIDOMWindow=} aRootFrame (optional)
-		 *   The root frame.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		middleClickAt : function() 
 		{
@@ -605,18 +542,9 @@ var action;
  
 		/**
 		 * Emulates a single right click at the coordinates on the screen.
-		 * Parameters are just same to action.clickAt.
+		 * Options are just same to action.clickAt.
 		 *
 		 * @see action.clickAt
-		 *
-		 * @param {number} aScreenX
-		 *   The X coordinate on the screen.
-		 * @param {number} aScreenY
-		 *   The Y coordinate on the screen.
-		 * @param {nsIDOMWindow=} aRootFrame (optional)
-		 *   The root frame.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		rightClickAt : function() 
 		{
@@ -628,7 +556,7 @@ var action;
 	
 		/**
 		 * Emulates a double left click at the coordinates on the screen.
-		 * Parameters are just same to action.clickAt.
+		 * Options are just same to action.clickAt.
 		 *
 		 * @see action.clickAt
 		 * @see action.doubleclickAt (alias)
@@ -638,15 +566,6 @@ var action;
 		 * @see action.leftDoubleclickAt (alias)
 		 * @see action.leftDblClickAt (alias)
 		 * @see action.leftDblclickAt (alias)
-		 *
-		 * @param {number} aScreenX
-		 *   The X coordinate on the screen.
-		 * @param {number} aScreenY
-		 *   The Y coordinate on the screen.
-		 * @param {nsIDOMWindow=} aRootFrame (optional)
-		 *   The root frame.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		doubleClickAt : function() 
 		{
@@ -670,21 +589,12 @@ var action;
  
 		/**
 		 * Emulates a double middle click at the coordinates on the screen.
-		 * Parameters are just same to action.clickAt.
+		 * Options are just same to action.clickAt.
 		 *
 		 * @see action.clickAt
 		 * @see action.middleDoubleclickAt (alias)
 		 * @see action.middleDblClickAt (alias)
 		 * @see action.middleDblclickAt (alias)
-		 *
-		 * @param {number} aScreenX
-		 *   The X coordinate on the screen.
-		 * @param {number} aScreenY
-		 *   The Y coordinate on the screen.
-		 * @param {nsIDOMWindow=} aRootFrame (optional)
-		 *   The root frame.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		middleDoubleClickAt : function() 
 		{
@@ -700,21 +610,12 @@ var action;
  
 		/**
 		 * Emulates a double right click at the coordinates on the screen.
-		 * Parameters are just same to action.clickAt.
+		 * Options are just same to action.clickAt.
 		 *
 		 * @see action.clickAt
 		 * @see action.rightDoubleclickAt (alias)
 		 * @see action.rightDblClickAt (alias)
 		 * @see action.rightDblclickAt (alias)
-		 *
-		 * @param {number} aScreenX
-		 *   The X coordinate on the screen.
-		 * @param {number} aScreenY
-		 *   The Y coordinate on the screen.
-		 * @param {nsIDOMWindow=} aRootFrame (optional)
-		 *   The root frame.
-		 * @param {Object=} aModifiers (optional)
-		 *   A hash of modifier keys.
 		 */
 		rightDoubleClickAt : function() 
 		{
@@ -730,70 +631,130 @@ var action;
   
 // mousedown/mouseup at position 
 	
+		/**
+		 * Emulates a single left mouse down at the coordinates on the screen.
+		 * Options are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.mousedownAt (alias)
+		 * @see action.leftMouseDownAt (alias)
+		 * @see action.leftMousedownAt (alias)
+		 */
 		mouseDownAt : function() 
 		{
 			var options = this._getMouseOptionsFor('mousedown', 0, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// mousedownAt, leftMouseDownAt, leftMousedownA
+		/** @see action.mouseDownAt */
+		mousedownAt : function() { return this.mouseDownAt.apply(this, arguments); },
+		/** @see action.mouseDownAt */
+		leftMouseDownAt : function() { return this.mouseDownAt.apply(this, arguments); },
+		/** @see action.mouseDownAt */
+		leftMousedownAt : function() { return this.mouseDownAt.apply(this, arguments); },
  
+		/**
+		 * Emulates a single middle mouse down at the coordinates on the screen.
+		 * Options are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.middleMousedownAt (alias)
+		 */
 		middleMouseDownAt : function() 
 		{
 			var options = this._getMouseOptionsFor('mousedown', 1, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// middleMousedownAt
+		/** @see action.middleMouseDownAt */
+		middleMousedownAt : function() { return this.middleMouseDownAt.apply(this, arguments); },
  
+		/**
+		 * Emulates a single right mouse down at the coordinates on the screen.
+		 * Options are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.rightMousedownAt (alias)
+		 */
 		rightMouseDownAt : function() 
 		{
 			var options = this._getMouseOptionsFor('mousedown', 2, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// rightMousedownAt
+		/** @see action.rightMouseDownAt */
+		rightMousedownAt : function() { return this.rightMouseDownAt.apply(this, arguments); },
  
+		/**
+		 * Emulates a single left mouse up at the coordinates on the screen.
+		 * Options are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.mouseupAt (alias)
+		 * @see action.leftMouseUpAt (alias)
+		 * @see action.leftMouseupAt (alias)
+		 */
 		mouseUpAt : function() 
 		{
 			var options = this._getMouseOptionsFor('mouseup', 0, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// mouseupAt, leftMouseUpAt, leftMouseupAt
+		/** @see action.mouseUpAt */
+		mouseupAt : function() { return this.mouseUpAt.apply(this, arguments); },
+		/** @see action.mouseUpAt */
+		leftMouseUpAt : function() { return this.mouseUpAt.apply(this, arguments); },
+		/** @see action.mouseUpAt */
+		leftMouseupAt : function() { return this.mouseUpAt.apply(this, arguments); },
  
+		/**
+		 * Emulates a single middle mouse up at the coordinates on the screen.
+		 * Options are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.middleMouseupAt (alias)
+		 */
 		middleMouseUpAt : function() 
 		{
 			var options = this._getMouseOptionsFor('mouseup', 1, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// middleMouseupAt
+		/** @see action.middleMouseUpAt */
+		middleMouseupAt : function() { return this.middleMouseUpAt.apply(this, arguments); },
  
+		/**
+		 * Emulates a single right mouse up at the coordinates on the screen.
+		 * Options are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.rightMouseupAt (alias)
+		 */
 		rightMouseUpAt : function() 
 		{
 			var options = this._getMouseOptionsFor('mouseup', 2, arguments);
 			this.fireMouseEvent(options.window, options);
 		},
-		// rightMouseupAt
+		/** @see action.rightMouseUpAt */
+		rightMouseupAt : function() { return this.rightMouseUpAt.apply(this, arguments); },
   
-// lower level API 
+// low level API 
 	
-		fireMouseEvent : function(aWindow, aOptions) 
+		fireMouseEvent : function(aFrame, aOptions) 
 		{
-			if (!aWindow ||
-				!(aWindow instanceof Ci.nsIDOMWindow))
-				throw new Error('action.fireMouseEvent::['+aWindow+'] is not a frame!');
+			if (!aFrame ||
+				!(aFrame instanceof Ci.nsIDOMWindow))
+				throw new Error('action.fireMouseEvent::['+aFrame+'] is not a frame!');
 
 			if (!aOptions) aOptions = {};
 
-			this._normalizeScreenAndClientPoint(aOptions, aWindow);
+			this._normalizeScreenAndClientPoint(aOptions, aFrame);
 			var x = aOptions.x;
 			var y = aOptions.y;
 			var screenX = aOptions.screenX;
 			var screenY = aOptions.screenY;
 
-			var win = this.getFrameFromScreenPoint(aWindow, screenX, screenY);
+			var win = this.getFrameFromScreenPoint(aFrame, screenX, screenY);
 			if (!win ||
 				!(win instanceof Ci.nsIDOMWindow))
 				throw new Error('action.fireMouseEvent::there is no frame at ['+screenX+', '+screenY+']!');
 
-			var node = this.getElementFromScreenPoint(aWindow, screenX, screenY);
+			var node = this.getElementFromScreenPoint(aFrame, screenX, screenY);
 
 			if (!this._getOwnerPopup(node)) {
 				var utils = this._getWindowUtils(win);
@@ -1009,11 +970,11 @@ var action;
 // drag and drop: under construction 
 	
 		/** @private */
-		dragStart : function(aWindow, aOptions) 
+		dragStart : function(aFrame, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
 			aOptions.type = 'mousedown';
-			this.fireMouseEvent(aWindow, aOptions);
+			this.fireMouseEvent(aFrame, aOptions);
 		},
 	
 		/** @private */
@@ -1025,11 +986,11 @@ var action;
 		},
   
 		/** @private */
-		dragEnd : function(aWindow, aOptions) 
+		dragEnd : function(aFrame, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
 			aOptions.type = 'mouseup';
-			this.fireMouseEvent(aWindow, aOptions);
+			this.fireMouseEvent(aFrame, aOptions);
 		},
 	
 		/** @private */
@@ -1041,7 +1002,7 @@ var action;
 		},
   
 		/** @private */
-		dragMove : function(aWindow, aFromX, aFromY, aToX, aToY, aOptions) 
+		dragMove : function(aFrame, aFromX, aFromY, aToX, aToY, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
 			var dragEndFlag = { value : false };
@@ -1078,16 +1039,16 @@ var action;
 					aOptions.type = 'mousemove';
 					aOptions.screenX = x;
 					aOptions.screenY = y;
-					_this.fireMouseEvent(aWindow, aOptions);
+					_this.fireMouseEvent(aFrame, aOptions);
 					yield;
 					if (x == aToX && y == aToY) break;
 				}
 			}
 			var dragger = Dragger();
-			aWindow.setTimeout(function() {
+			aFrame.setTimeout(function() {
 				try {
 					dragger.next();
-					aWindow.setTimeout(arguments.callee, 10);
+					aFrame.setTimeout(arguments.callee, 10);
 				}
 				catch(e) {
 					dragEndFlag.value = true;
@@ -1119,22 +1080,22 @@ var action;
 		},
   
 		/** @private */
-		dragAndDrop : function(aWindow, aFromX, aFromY, aToX, aToY, aOptions) 
+		dragAndDrop : function(aFrame, aFromX, aFromY, aToX, aToY, aOptions) 
 		{
 			if (!aOptions) aOptions = {};
 			aOptions.screenX = aFromX;
 			aOptions.screenY = aFromY;
-			this.dragStart(aWindow, aOptions);
+			this.dragStart(aFrame, aOptions);
 			var dragEndFlag = { value : false };
 			var _this = this;
-			aWindow.setTimeout(function() {
-				var flag = aSelf.dragMove(aWindow, aFromX, aFromY, aToX, aToY, aOptions);
-				var timer = aWindow.setInterval(function() {
+			aFrame.setTimeout(function() {
+				var flag = aSelf.dragMove(aFrame, aFromX, aFromY, aToX, aToY, aOptions);
+				var timer = aFrame.setInterval(function() {
 					if (!flag.value) return;
-					aWindow.clearInterval(timer);
+					aFrame.clearInterval(timer);
 					aOptions.screenX = aToX;
 					aOptions.screenY = aToY;
-					aSelf.dragEnd(aWindow, aOptions);
+					aSelf.dragEnd(aFrame, aOptions);
 					dragEndFlag.value = true;
 				}, 10, this);
 			}, 0);
@@ -1230,21 +1191,24 @@ var action;
 			var options = this._getKeyOptionsFor('keypress', arguments);
 			this.fireKeyEventOnElement(options.element, options);
 		},
-		// keypressOn
+		/** @see action.keyPressOn */
+		keypressOn : function() { return this.keyPressOn.apply(this, arguments); },
  
 		keyDownOn : function(aElement, aKeyOrCharCode) 
 		{
 			var options = this._getKeyOptionsFor('keydown', arguments);
 			this.fireKeyEventOnElement(options.element, options);
 		},
-		// keydownOn
+		/** @see action.keyDownOn */
+		keydownOn : function() { return this.keyDownOn.apply(this, arguments); },
  
 		keyUpOn : function(aElement, aKeyOrCharCode) 
 		{
 			var options = this._getKeyOptionsFor('keyup', arguments);
 			this.fireKeyEventOnElement(options.element, options);
 		},
-		// keyupOn
+		/** @see action.keyUpOn */
+		keyupOn : function() { return this.keyUpOn.apply(this, arguments); },
  
 // lower level API 
 	
@@ -1359,15 +1323,15 @@ var action;
     
 /* XULCommand event */ 
 	
-		fireXULCommandEvent : function(aWindow, aOptions) 
+		fireXULCommandEvent : function(aFrame, aOptions) 
 		{
-			if (!aWindow ||
-				!(aWindow instanceof Ci.nsIDOMWindow))
-				throw new Error('action.fireXULCommandEvent::['+aWindow+'] is not a frame!');
+			if (!aFrame ||
+				!(aFrame instanceof Ci.nsIDOMWindow))
+				throw new Error('action.fireXULCommandEvent::['+aFrame+'] is not a frame!');
 
 			if (!aOptions) aOptions = {};
-			this._normalizeScreenAndClientPoint(aOptions, aWindow);
-			var node = this.getElementFromScreenPoint(aWindow, aOptions.screenX, aOptions.screenY);
+			this._normalizeScreenAndClientPoint(aOptions, aFrame);
+			var node = this.getElementFromScreenPoint(aFrame, aOptions.screenX, aOptions.screenY);
 			if (!node)
 				throw new Error('action.fireXULCommandEvent::there is no element at ['+aOptions.screenX+','+aOptions.screenY+']!');
 			return this.fireXULCommandEventOnElement(node, aOptions);
@@ -1684,14 +1648,14 @@ var action;
 			}
 			var youngest;
 			array.reverse()
-				.some(function(aWindow) {
+				.some(function(aFrame) {
 					youngest = this._isInside({
-								x      : aWindow.screenX,
-								y      : aWindow.screenY,
-								width  : aWindow.outerWidth,
-								height : aWindow.outerHeight
+								x      : aFrame.screenX,
+								y      : aFrame.screenY,
+								width  : aFrame.outerWidth,
+								height : aFrame.outerHeight
 							}, aScreenX, aScreenY) ?
-								aWindow :
+								aFrame :
 								null ;
 					return youngest;
 				}, this);
@@ -1950,144 +1914,22 @@ var action;
 			if (!aNamespace)
 				return;
 
-			var self = this;
-			this._exportedSymbols.forEach(function(aSymbol) {
-				aNamespace[aSymbol] = function() {
-					return self[aSymbol].apply(self, arguments);
-				};
-			});
-			for (var i in this._exportedSymbolsAliases)
+			for (var i in this)
 			{
-				this._exportedSymbolsAliases[i].forEach(function(aSymbol) {
-					aNamespace[aSymbol] = aNamespace[i];
-				});
+				if (i.charAt(0) == '_' ||
+					!this.hasOwnProperty(i) ||
+					typeof this[i] != 'function')
+					continue;
+
+				(function(aSymbol, aSelf) {
+					aNamespace[aSymbol] = function() {
+						return aSelf[aSymbol].apply(aSelf, arguments);
+					};
+				})(i, this);
 			}
-		},
-		_exportedSymbols : [],
-		_exportedSymbolsAliases : {},
- 
-		_init : function() 
-		{
-			this._exportedSymbols = [];
-			this._exportedSymbolsAliases = {};
-
-			var lastSymbol;
-
-			<![CDATA[
-
-getBoxObjectFor
-isFullZoom
-getZoom
-clickOn
-	leftClickOn
-middleClickOn
-rightClickOn
-doubleClickOn
-	doubleclickOn
-	dblClickOn
-	dblclickOn
-	leftDoubleclickOn
-	leftDoubleClickOn
-	leftDblClickOn
-	leftDblclickOn
-middleDoubleClickOn
-	middleDoubleclickOn
-	middleDblClickOn
-	middleDblclickOn
-rightDoubleClickOn
-	rightDoubleclickOn
-	rightDblClickOn
-	rightDblclickOn
-mouseDownOn
-	mousedownOn
-	leftMouseDownOn
-	leftMousedownOn
-middleMouseDownOn
-	middleMousedownOn
-rightMouseDownOn
-	rightMousedownOn
-mouseUpOn
-	mouseupOn
-	leftMouseUpOn
-	leftMouseupOn
-middleMouseUpOn
-	middleMouseupOn
-rightMouseUpOn
-	rightMouseupOn
-clickAt
-	leftClickAt
-middleClickAt
-rightClickAt
-doubleClickAt
-	doubleclickAt
-	dblClickAt
-	dblclickAt
-	leftDoubleClickAt
-	leftDoubleclickAt
-middleDoubleClickAt
-	middleDoubleclickAt
-	middleDblClickAt
-	middleDblclickAt
-rightDoubleClickAt
-	rightDoubleclickAt
-	rightDblClickAt
-	rightDblclickAt
-mouseDownAt
-	mousedownAt
-	leftMouseDownAt
-	leftMousedownAt
-middleMouseDownAt
-	middleMousedownAt
-rightMouseDownAt
-	rightMousedownAt
-mouseUpAt
-	mouseupAt
-	leftMouseUpAt
-	leftMouseupAt
-middleMouseUpAt
-	middleMouseupAt
-rightMouseUpAt
-	rightMouseupAt
-fireMouseEvent
-fireMouseEventOnElement
-keyPressOn
-	keypressOn
-keyDownOn
-	keydownOn
-keyUpOn
-	keyupOn
-fireKeyEventOnElement
-fireXULCommandEvent
-fireXULCommandEventOnElement
-inputTo
-appendTo
-pasteTo
-additionallyPasteTo
-inputTextToField
-getElementFromScreenPoint
-getFrameFromScreenPoint
-	getWindowFromScreenPoint
-
-			]]>.toString()
-				.replace(/^\s+|\s+$/g, '')
-				.split('\n')
-				.forEach(function(aSymbol) {
-					if (/^\s/.test(aSymbol)) {
-						aSymbol = aSymbol.replace(/^\s+/, '');
-						if (!(lastSymbol in this._exportedSymbolsAliases))
-							this._exportedSymbolsAliases[lastSymbol] = [];
-						this._exportedSymbolsAliases[lastSymbol].push(aSymbol);
-						this[aSymbol] = this[lastSymbol];
-					}
-					else {
-						lastSymbol = aSymbol;
-						this._exportedSymbols.push(aSymbol);
-					}
-				}, this);
 		}
  
 	}; 
-	action._init();
 	namespace.action = action;
   
 })(); 
