@@ -154,9 +154,13 @@ var action;
 		 *           shiftKey: boolean,
 		 *           x: number,
 		 *           y: number,
+		 *           screenX: number,
+		 *           screenY: number,
 		 *           window: ?nsIDOMWindow,
 		 *           element: ?nsIDOMElement}}
-		 *   Options normalized to a hash.
+		 *   Options normalized to a hash. "x" and "y" will be relative
+		 *   coordinates from the window edge, if no frame is given and there
+		 *   is a frame on the given coordinates on the screen.
 		 */
 		_getMouseOptionsFor : function(aType, aButton, aArguments) 
 		{
@@ -174,6 +178,8 @@ var action;
 			}
 			if (options.window) {
 				returnOptions.window = options.window;
+				returnOptions.screenX = options.screenX;
+				returnOptions.screenY = options.screenY;
 				returnOptions.x = options.x;
 				returnOptions.y = options.y;
 			}
@@ -206,13 +212,17 @@ var action;
 		 *
 		 * @return {{x: number,
 		 *           y: number,
+		 *           screenX: number,
+		 *           screenY: number,
 		 *           window: ?nsIDOMWindow,
 		 *           element: ?nsIDOMElement,
 		 *           modifiers: {altKey: boolean,
 		 *                       ctrlKey: boolean,
 		 *                       metaKey: boolean,
 		 *                       shiftKey: boolean}}}
-		 *   Options normalized to a hash.
+		 *   Options normalized to a hash. "x" and "y" will be relative
+		 *   coordinates from the window edge, if no frame is given and there
+		 *   is a frame on the given coordinates on the screen.
 		 */
 		_getMouseOptionsFromArguments : function(aArguments) 
 		{
@@ -240,10 +250,13 @@ var action;
 				return (x && y && w && modifiers && element);
 			}, this);
 
+			let screenX, screenY;
 			if (!w && x !== void(0) && y !== void(0)) {
 				w = this._getWindowFromScreenPoint(x, y);
 				w = this.getFrameFromScreenPoint(w, x, y);
 				let root = this.getBoxObjectFor(w.document.documentElement);
+				screenX = x;
+				screenY = y;
 				x = x - root.screenX - w.scrollX;
 				y = y - root.screenY - w.scrollY;
 			}
@@ -261,6 +274,8 @@ var action;
 			return {
 				x : x,
 				y : y,
+				screenX : screenX,
+				screenY : screenY,
 				window : w,
 				element : element,
 				modifiers : modifiers || {}
@@ -735,6 +750,9 @@ var action;
   
 // low level API 
 	
+		/**
+		 * Emulates various mouse event
+		 */
 		fireMouseEvent : function(aFrame, aOptions) 
 		{
 			if (!aFrame ||
@@ -1847,22 +1865,22 @@ var action;
 			var zoom = this.isFullZoom() ? this.getZoom(aFrame) : 1 ;
 			var box = this.getBoxObjectFor(aFrame.document.documentElement);
 
-			var x = ('x' in aOptions ?
-					aOptions.x :
-				'screenX' in aOptions ?
-					aOptions.screenX - box.screenX - aFrame.scrollX :
-					0
-				) * zoom;
-			var y = ('y' in aOptions ?
-					aOptions.y :
-				'screenY' in aOptions ?
-					aOptions.screenY - box.screenY - aFrame.scrollY :
-					0
-				) * zoom;
-			var screenX = ('screenX' in aOptions) ?
+			var x = (aOptions.x !== void(0) ?
+						aOptions.x :
+					aOptions.screenX !== void(0) ?
+						aOptions.screenX - box.screenX - aFrame.scrollX :
+						0
+					) * zoom;
+			var y = (aOptions.y !== void(0) ?
+						aOptions.y :
+					aOptions.screenY !== void(0) ?
+						aOptions.screenY - box.screenY - aFrame.scrollY :
+						0
+					) * zoom;
+			var screenX = aOptions.screenX !== void(0) ?
 					aOptions.screenX :
 					box.screenX + x + aFrame.scrollX;
-			var screenY = ('screenY' in aOptions) ?
+			var screenY = aOptions.screenY !== void(0) ?
 					aOptions.screenY :
 					box.screenY + y + aFrame.scrollY;
 

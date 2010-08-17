@@ -7,9 +7,9 @@ function actionSetUp()
 	actionModule = ns.namespace.action;
 	assert.isTrue(actionModule);
 
-	delete actionModule.boxObject;
+	delete actionModule._boxObject;
 	utils.include(baseURL+'fixtures/boxObject.js', ns);
-	actionModule.boxObject = ns.window['piro.sakura.ne.jp'].boxObject;
+	actionModule._boxObject = ns.window['piro.sakura.ne.jp'].boxObject;
 
 	lastCount = 0;
 	target = null;
