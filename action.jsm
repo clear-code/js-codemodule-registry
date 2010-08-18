@@ -12,9 +12,8 @@
  * @lisence
  *   The MIT License, Copyright (c) 2010 ClearCode Inc.
  *   http://www.clear-code.com/repos/svn/js-codemodules/license.txt
- * @url
- *   http://www.clear-code.com/repos/svn/js-codemodules/action.jsm
- *   http://www.clear-code.com/repos/svn/js-codemodules/action_tests/
+ * @url http://www.clear-code.com/repos/svn/js-codemodules/action.jsm
+ * @url http://www.clear-code.com/repos/svn/js-codemodules/action_tests/
  */
  
 if (typeof window == 'undefined') 
