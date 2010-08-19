@@ -185,4 +185,5 @@ var encoding;
 		}
 	};
 
+	namespace.encoding = encoding;
 })();

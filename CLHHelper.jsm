@@ -253,5 +253,5 @@ var CLHHelper;
 		}
 	};
 
-	CLHHelper = namespace.CLHHelper;
+	namespace.CLHHelper = CLHHelper;
 })();
