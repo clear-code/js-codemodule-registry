@@ -31,7 +31,7 @@ var textIO;
 (function() {
 	const currentRevision = 2;
 
-	var loadedRevision = 'encoding' in namespace ?
+	var loadedRevision = 'textIO' in namespace ?
 			namespace.textIO.revision :
 			0 ;
 	if (loadedRevision && loadedRevision > currentRevision) {
