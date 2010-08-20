@@ -3,7 +3,7 @@
  * @author       ClearCode Inc.
  * @version      1
  *
- * @lisence
+ * @license
  *   The MIT License, Copyright (c) 2010 ClearCode Inc.
  *   http://www.clear-code.com/repos/svn/js-codemodules/license.txt
  * @url http://www.clear-code.com/repos/svn/js-codemodules/registry.jsm
