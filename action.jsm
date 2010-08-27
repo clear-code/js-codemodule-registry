@@ -16,7 +16,8 @@
  * @url http://www.clear-code.com/repos/svn/js-codemodules/action_tests/
  */
  
-if (typeof window == 'undefined') 
+if (typeof window == 'undefined' ||
+	(window && typeof window.constructor == 'function')) 
 	this.EXPORTED_SYMBOLS = ['action'];
 
 // This depends on boxObject.js

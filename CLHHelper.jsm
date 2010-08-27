@@ -10,7 +10,8 @@
  * @url http://www.clear-code.com/repos/svn/js-codemodules/CLHHelper.test.js
  */
 
-if (typeof window == 'undefined')
+if (typeof window == 'undefined' ||
+	(window && typeof window.constructor == 'function'))
 	this.EXPORTED_SYMBOLS = ['CLHHelper'];
 
 // var namespace;

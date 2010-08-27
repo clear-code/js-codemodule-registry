@@ -10,7 +10,8 @@
  * @url http://www.clear-code.com/repos/svn/js-codemodules/registry.test.js
  */
 
-if (typeof window == 'undefined')
+if (typeof window == 'undefined' ||
+	(window && typeof window.constructor == 'function'))
 	this.EXPORTED_SYMBOLS = ['registry'];
 
 // var namespace;
