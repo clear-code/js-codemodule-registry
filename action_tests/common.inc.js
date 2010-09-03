@@ -1,5 +1,10 @@
 var actionModule;
 
+function startUp()
+{
+	utils.allowRemoteXUL();
+}
+
 function actionSetUp()
 {
 	var ns = { namespace : {}, window : {} };
