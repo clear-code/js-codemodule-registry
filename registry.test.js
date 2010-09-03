@@ -67,11 +67,7 @@ function clearRoot()
 		Ci.nsIWindowsRegKey.ROOT_KEY_CURRENT_USER,
 		'HKCU\\Software\\ClearCode Inc.\\JSCodeModule'
 	);
-}
-
-function startUp()
-{
-	clearRoot();
+	utils.wait(100);
 }
 
 function shutDown()
@@ -85,6 +81,7 @@ function setUp()
 	var ns = { namespace : {} };
 	utils.include('registry.jsm', ns);
 	registry = ns.namespace.registry;
+	clearRoot();
 
 }
 
@@ -92,8 +89,6 @@ function tearDown()
 {
 }
 
-test__splitKey.setUp = clearRoot;
-test__splitKey.tearDown = clearRoot;
 function test__splitKey()
 {
 	function assertSplitKey(aExpected, aInput)
@@ -167,8 +162,6 @@ function test__splitKey()
 	);
 }
 
-test_getValue.setUp = clearRoot;
-test_getValue.tearDown = clearRoot;
 function test_getValue()
 {
 	function assertGetValue(aExpected, aKey)
@@ -205,65 +198,18 @@ function test_getValue()
 var testData = [
 		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-string',
 		  value    : 'string' },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-string',
-		  value    : true,
-		  expected : 'true' },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-string',
-		  value    : 29,
-		  expected : '29' },
 		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-number',
 		  value    : 29 },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-number',
-		  value    : '2929',
-		  expected : 2929 },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-number',
-		  value    : true,
-		  expected : 1 },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-number',
-		  value    : false,
-		  expected : 0 },
 		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
-		  value    : [0, 2, 9, 29] },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
-		  value    : 97,
-		  expected : [97] },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
-		  value    : 'b',
-		  expected : [98] },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
-		  value    : [true, false],
-		  error    : 'Failed to write new value!' },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
-		  value    : ['a', 'b'],
-		  error    : 'Failed to write new value!' },
-		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
-		  value    : [{ value : true }, { value : false }],
-		  error    : 'Failed to write new value!' }
+		  value    : [0, 2, 9, 29] }
 	];
 
-if (isWindows) {
-	test_setValue.setUp = clearRoot;
-	test_setValue.tearDown = clearRoot;
-}
 test_setValue.parameters = testData;
 function test_setValue(aData)
 {
 	if (isWindows) {
-		if (aData.error) {
-			assert.raises(
-				aData.error,
-				function() {
-					registry.setValue(aData.key, aData.value)
-				}
-			);
-		}
-		else {
-			registry.setValue(aData.key, aData.value);
-			assert.strictlyEquals(
-				('expected' in aData ? aData.expected : aData.value ),
-				registry.getValue(aData.key)
-			);
-		}
+		registry.setValue(aData.key, aData.value);
+		assert.strictlyEquals(aData.value, registry.getValue(aData.key));
 	}
 	else {
 		assert.raises(
@@ -275,20 +221,80 @@ function test_setValue(aData)
 	}
 }
 
+test_setValue_overwrite.shouldSkip = !isWindows;
+test_setValue_overwrite.parameters = [
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-string',
+		  old      : 's',
+		  value    : true,
+		  expected : 'true' },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-string',
+		  old      : 's',
+		  value    : 29,
+		  expected : '29' },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-number',
+		  old      : 0,
+		  value    : '2929',
+		  expected : 2929 },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-number',
+		  old      : 0,
+		  value    : true,
+		  expected : 1 },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-number',
+		  old      : 0,
+		  value    : false,
+		  expected : 0 },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
+		  old      : [0],
+		  value    : 97,
+		  expected : [97] },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
+		  old      : [0],
+		  value    : 'b',
+		  expected : [98] },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
+		  old      : [0],
+		  value    : [true, false],
+		  error    : 'Failed to write new value! (blob contains invalid byte)' },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
+		  old      : [0],
+		  value    : ['a', 'b'],
+		  error    : 'Failed to write new value! (blob contains invalid byte)' },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
+		  old      : [0],
+		  value    : [{ value : true }, { value : false }],
+		  error    : 'Failed to write new value! (blob contains invalid byte)' }
+	];
+test_setValue_overwrite.setUp = function(aData)
+{
+	registry.setValue(aData.key, aData.old);
+}
+function test_setValue_overwrite(aData)
+{
+	if (aData.error) {
+		assert.raises(
+			aData.error,
+			function() {
+				registry.setValue(aData.key, aData.value)
+			}
+		);
+	}
+	else {
+		registry.setValue(aData.key, aData.value);
+		assert.strictlyEquals(aData.expected, registry.getValue(aData.key));
+	}
+}
+
 test_clear.shouldSkip = !isWindows;
 test_clear.setUp = function() {
-	clearRoot();
 	testData.forEach(function(aData) {
-		if (aData.error) return;
+		if (aData.error || registry.getValue(aData.key) !== null)
+			return;
 		registry.setValue(aData.key, aData.value);
 		assert.strictlyEquals(
 			('expected' in aData ? aData.expected : aData.value ),
 			registry.getValue(aData.key)
 		);
 	});
-};
-test_clear.tearDown = function() {
-	clearRoot();
 };
 function test_clear()
 {
