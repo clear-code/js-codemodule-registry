@@ -63,6 +63,7 @@ function clearKey(aRoot, aPath)
 
 function clearRoot()
 {
+	if (!isWindows) return;
 	clearKey(
 		Ci.nsIWindowsRegKey.ROOT_KEY_CURRENT_USER,
 		'HKCU\\Software\\ClearCode Inc.\\JSCodeModule'
@@ -254,15 +255,18 @@ test_setValue_overwrite.parameters = [
 		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
 		  old      : [0],
 		  value    : [true, false],
-		  error    : 'Failed to write new value! (blob contains invalid byte)' },
+		  error    : { message  : 'Failed to write new value!',
+		               reason   : 'blob contains invalid byte' } },
 		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
 		  old      : [0],
 		  value    : ['a', 'b'],
-		  error    : 'Failed to write new value! (blob contains invalid byte)' },
+		  error    : { message  : 'Failed to write new value!',
+		               reason   : 'blob contains invalid byte' } },
 		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
 		  old      : [0],
 		  value    : [{ value : true }, { value : false }],
-		  error    : 'Failed to write new value! (blob contains invalid byte)' }
+		  error    : { message  : 'Failed to write new value!',
+		               reason   : 'blob contains invalid byte' } }
 	];
 test_setValue_overwrite.setUp = function(aData)
 {
@@ -290,10 +294,7 @@ test_clear.setUp = function() {
 		if (aData.error || registry.getValue(aData.key) !== null)
 			return;
 		registry.setValue(aData.key, aData.value);
-		assert.strictlyEquals(
-			('expected' in aData ? aData.expected : aData.value ),
-			registry.getValue(aData.key)
-		);
+		assert.strictlyEquals(aData.value, registry.getValue(aData.key));
 	});
 };
 function test_clear()

@@ -66,13 +66,15 @@ var registry;
 		ERROR_CLEAR_FAILED : 'Failed to clear a registry key!',
 
 		/** @const */
-		ERROR_TYPE_UNKNOWN   : 'unknown type value',
+		REASON_UNKNOWN        : 'unknown reason',
 		/** @const */
-		ERROR_TYPE_NONE      : 'type is TYPE_NONE',
+		REASON_UNKNOWN_TYPE   : 'unknown type value',
 		/** @const */
-		ERROR_INVALID_BLOB   : 'blob contains invalid byte',
+		REASON_NONE           : 'type is TYPE_NONE',
 		/** @const */
-		ERROR_INVALID_NUMBER : 'given value is not a number',
+		REASON_INVALID_BLOB   : 'blob contains invalid byte',
+		/** @const */
+		REASON_INVALID_NUMBER : 'given value is not a number',
 
 		/**
 		 * @private
@@ -254,11 +256,12 @@ var registry;
 				regKey.close();
 				var message = self.ERROR_WRITE_FAILED;
 				if (!aError || typeof aError == 'string') {
-					if (aError) message += ' ('+aError+')';
+					let reason = aError || self.REASON_UNKNOWN_TYPE;
 					aError = new Error(message);
+					aError.reason = reason;
 				}
-				aError.key   = aKey;
-				aError.value = aValue;
+				aError.key    = aKey;
+				aError.value  = aValue;
 				throw aError || new Error(message);
 			}
 
@@ -286,7 +289,7 @@ var registry;
 								type = Ci.nsIWindowsRegKey.TYPE_BINARY;
 							}
 							else {
-								closeAndThrowError(this.ERROR_TYPE_UNKNOWN);
+								closeAndThrowError(this.REASON_UNKNOWN);
 							}
 							break;
 					}
@@ -295,7 +298,7 @@ var registry;
 				switch (type)
 				{
 					case Ci.nsIWindowsRegKey.TYPE_NONE:
-						closeAndThrowError(this.ERROR_TYPE_NONE);
+						closeAndThrowError(this.REASON_NONE);
 						break;
 					case Ci.nsIWindowsRegKey.TYPE_STRING:
 						regKey.writeStringValue(name, String(aValue));
@@ -318,12 +321,12 @@ var registry;
 									'forEach' in aValue) {
 									aValue = aValue.map(function(aCode) {
 										if (typeof aCode != 'number')
-											closeAndThrowError(self.ERROR_INVALID_BLOB);
+											closeAndThrowError(self.REASON_INVALID_BLOB);
 										return String.fromCharCode(aCode);
 									}).join('');
 								}
 								else {
-									closeAndThrowError(this.ERROR_TYPE_UNKNOWN);
+									closeAndThrowError(this.REASON_UNKNOWN);
 								}
 								break;
 						}
@@ -339,10 +342,10 @@ var registry;
 							case 'number':
 								aValue = parseInt(aValue);
 								if (isNaN(aValue))
-									closeAndThrowError(this.ERROR_INVALID_NUMBER);
+									closeAndThrowError(this.REASON_INVALID_NUMBER);
 								break;
 							case 'object':
-								closeAndThrowError(this.ERROR_INVALID_NUMBER);
+								closeAndThrowError(this.REASON_INVALID_NUMBER);
 								break;
 						}
 						regKey.writeIntValue(name, aValue);
@@ -356,10 +359,10 @@ var registry;
 							case 'string':
 							case 'number':
 								aValue = parseInt(aValue);
-								if (isNaN(aValue)) closeAndThrowError(this.ERROR_INVALID_NUMBER);
+								if (isNaN(aValue)) closeAndThrowError(this.REASON_INVALID_NUMBER);
 								break;
 							case 'object':
-								closeAndThrowError(this.ERROR_INVALID_NUMBER);
+								closeAndThrowError(this.REASON_INVALID_NUMBER);
 								break;
 						}
 						regKey.writeInt64Value(name, aValue);
