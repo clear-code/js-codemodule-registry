@@ -122,6 +122,12 @@ function test__splitKey()
 		 'Content Type'],
 		'HKCR\\.txt\\Content Type'
 	);
+	assertSplitKey(
+		[Ci.nsIWindowsRegKey.ROOT_KEY_CLASSES_ROOT,
+		 '.txt',
+		 ''],
+		'HKCR\\.txt\\'
+	);
 
 	assertSplitKey(
 		[Ci.nsIWindowsRegKey.ROOT_KEY_CURRENT_USER,
@@ -139,6 +145,14 @@ function test__splitKey()
 		'HKCU\\Software\\Microsoft\\Windows\\'+
 			'CurrentVersion\\Internet Settings\\MigrateProxy'
 	);
+	assertSplitKey(
+		[Ci.nsIWindowsRegKey.ROOT_KEY_CURRENT_USER,
+		 'Software\\Microsoft\\Windows\\'+
+			'CurrentVersion\\Internet Settings',
+		 ''],
+		'HKCU\\Software\\Microsoft\\Windows\\'+
+			'CurrentVersion\\Internet Settings\\'
+	);
 
 	assertSplitKey(
 		[Ci.nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE,
@@ -154,12 +168,25 @@ function test__splitKey()
 		'HKLM\\SOFTWARE\\Microsoft\\Windows\\'+
 			'CurrentVersion\\ProgramFilesPath'
 	);
+	assertSplitKey(
+		[Ci.nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE,
+		 'SOFTWARE\\Microsoft\\Windows\\CurrentVersion',
+		 ''],
+		'HKLM\\SOFTWARE\\Microsoft\\Windows\\'+
+			'CurrentVersion\\'
+	);
 
 	assertSplitKey(
 		[-1,
 		 'Path',
 		 'Name'],
 		'UNKNOWN\\Path\\Name'
+	);
+	assertSplitKey(
+		[-1,
+		 'Path',
+		 ''],
+		'UNKNOWN\\Path\\'
 	);
 }
 
@@ -194,6 +221,11 @@ function test_getValue()
 		'HKLM\\Software\\Microsoft\\Windows\\'+
 			'CurrentVersion\\explorer\\Advanced\\TaskbarSizeMove'
 	);
+	// REG_EXPAND_SZ, default value
+	assertGetValue(
+		'lnkfile',
+		'HKCR\\.lnk\\'
+	);
 }
 
 var testData = [
@@ -202,7 +234,9 @@ var testData = [
 		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-number',
 		  value    : 29 },
 		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-binary',
-		  value    : [0, 2, 9, 29] }
+		  value    : [0, 2, 9, 29] },
+		{ key      : 'HKCU\\Software\\ClearCode Inc.\\JSCodeModule\\test\\test-default\\',
+		  value    : 'default' }
 	];
 
 test_setValue.parameters = testData;
