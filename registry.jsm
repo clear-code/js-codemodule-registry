@@ -1,7 +1,7 @@
 /**
  * @fileOverview Windows Registry I/O Library for Firefox 3.5 or later
  * @author       ClearCode Inc.
- * @version      2
+ * @version      3
  *
  * @license
  *   The MIT License, Copyright (c) 2010 ClearCode Inc.
@@ -30,7 +30,7 @@ if (typeof namespace == 'undefined') {
 
 var registry;
 (function() {
-	const currentRevision = 2;
+	const currentRevision = 3;
 
 	var loadedRevision = 'registry' in namespace ?
 			namespace.registry.revision :
@@ -98,8 +98,8 @@ var registry;
 			if (!('nsIWindowsRegKey' in Ci))
 				throw new Error(this.ERROR_NOT_WINDOWS);
 
-			path = aKey.replace(/\\([^\\]+)$/, '');
-			name = RegExp.$1;
+			path = aKey.replace(/\\([^\\]*)$/, '');
+			name = RegExp.$1 || '';
 
 			path = path.replace(/^([^\\]+)\\/, '');
 			root = RegExp.$1.toUpperCase();
@@ -149,7 +149,7 @@ var registry;
 
 			var root, path, name;
 			[root, path, name] = this._splitKey(aKey);
-			if (root < 0 || !path || !name)
+			if (root < 0 || !path)
 				return value;
 
 			var regKey = Cc['@mozilla.org/windows-registry-key;1']
@@ -213,7 +213,7 @@ var registry;
 		{
 			var root, path, name;
 			[root, path, name] = this._splitKey(aKey);
-			if (root < 0 || !path || !name)
+			if (root < 0 || !path)
 				throw new Error(this.ERROR_WRITE_FAILED);
 
 			// create upper level items automatically
@@ -392,7 +392,7 @@ var registry;
 		{
 			var root, path, name;
 			[root, path, name] = this._splitKey(aKey);
-			if (root < 0 || !path || !name)
+			if (root < 0 || !path)
 				throw new Error(this.ERROR_CLEAR_FAILED);
 
 			this._clear(root, path+'\\'+name);
