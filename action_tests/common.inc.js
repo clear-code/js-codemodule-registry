@@ -16,6 +16,11 @@ function actionSetUp()
 	utils.include(baseURL+'fixtures/boxObject.js', ns);
 	actionModule._boxObject = ns.window['piro.sakura.ne.jp'].boxObject;
 
+	delete actionModule._timer;
+	var timer = {};
+	utils.include(baseURL+'fixtures/jstimer.jsm', timer);
+	actionModule._timer = timer;
+
 	lastCount = 0;
 	target = null;
 	boxObject = null;
@@ -30,9 +35,7 @@ function actionTearDown()
 	rootBoxObject = null;
 }
 
-
-var lastCount = 0;
-function assertEventsCount(aCount, aOwner)
+function getEvents(aOwner)
 {
 	var events;
 	var result = $('log', aOwner).textContent;
@@ -42,6 +45,14 @@ function assertEventsCount(aCount, aOwner)
 	else {
 		events = [];
 	}
+	return events;
+}
+
+
+var lastCount = 0;
+function assertEventsCount(aCount, aOwner)
+{
+	var events = this.getEvents(aOwner);
 	assert.equals(lastCount+aCount, events.length, inspect(events));
 	lastCount += aCount;
 	return events;

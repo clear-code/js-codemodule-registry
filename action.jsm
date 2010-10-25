@@ -1228,16 +1228,30 @@ var action;
 			var sx, sy, ex, ey, modifiers, selement, eelement, duration;
 			Array.slice(arguments).some(function(aArg) {
 				if (typeof aArg == 'number') {
-					if (sx === void(0))
-						sx = aArg;
-					else if (sy === void(0))
-						sy = aArg;
-					else if (ex === void(0))
-						ex = aArg;
-					else if (ey === void(0))
-						ey = aArg;
-					else if (duration === void(0))
-						duration = aArg;
+					if (selement) {
+						if (eelement) {
+							if (duration === void(0))
+								duration = aArg;
+						}
+						else if (ex === void(0))
+							ex = aArg;
+						else if (ey === void(0))
+							ey = aArg;
+						else if (duration === void(0))
+							duration = aArg;
+					}
+					else {
+						if (sx === void(0))
+							sx = aArg;
+						else if (sy === void(0))
+							sy = aArg;
+						else if (ex === void(0))
+							ex = aArg;
+						else if (ey === void(0))
+							ey = aArg;
+						else if (duration === void(0))
+							duration = aArg;
+					}
 				}
 				else if (aArg) {
 					if (aArg instanceof Ci.nsIDOMElement) {
@@ -1253,6 +1267,11 @@ var action;
 				}
 				return (sx && sy && ex && ey && modifiers && selement && eelement);
 			}, this);
+
+			if (selement && eelement && sx !== void(0) && sy === void(0)) {
+				duration = sx;
+				sx = void(0);
+			}
 
 			if (selement) {
 				let position = {};
@@ -1338,6 +1357,7 @@ var action;
 						completedFlag.cancel();
 					}
 				}, 10);
+			this.mouseMoveAt(args.startX, args.startY, args.modifiers);
 			return completedFlag;
 		},
 		/** @see action.asyncMouseMove */
@@ -1351,11 +1371,11 @@ var action;
 		syncMouseMove : function()
 		{
 			var args = this._getMouseMoveOptionsFromArguments.apply(this, arguments);
-			var flag = this.asyncMouseMove.apply(this, arguments);
+			var completed = this.asyncMouseMove.apply(this, arguments);
 			var lastRun = Date.now();
 			var timeout = Math.max(0, args.duration) + 5000;
 			var thread = Cc['@mozilla.org/thread-manager;1'].getService().mainThread;
-			while (!finished.value)
+			while (!completed.value)
 			{
 				thread.processNextEvent(true);
 				if (Date.now() - lastRun >= timeout)

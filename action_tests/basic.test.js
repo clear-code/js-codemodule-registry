@@ -380,3 +380,42 @@ function test_additionallyPasteTo()
 	);
 }
 
+
+function test_asyncMouseMove()
+{
+	var start = $('clickable-box');
+	var end = $('clickable-button');
+	var completed = actionModule.asyncMouseMove(start, end, 200);
+	utils.wait(500);
+
+	assert.isTrue(completed.value);
+
+	var events = getEvents();
+	assert.compare(2, '<=', events.length);
+
+	target = start;
+	boxObject = utils.getBoxObjectFor(start);
+	assertMouseEventOn('mousemove', 0, {}, 0, events[0]);
+
+	target = end;
+	boxObject = utils.getBoxObjectFor(end);
+	assertMouseEventOn('mousemove', 0, {}, 0, events[events.length-1]);
+}
+
+function test_syncMouseMove()
+{
+	var start = $('clickable-box');
+	var end = $('clickable-button');
+	actionModule.syncMouseMove(start, end, 200);
+
+	var events = getEvents();
+	assert.compare(2, '<=', events.length);
+
+	target = start;
+	boxObject = utils.getBoxObjectFor(start);
+	assertMouseEventOn('mousemove', 0, {}, 0, events[0]);
+
+	target = end;
+	boxObject = utils.getBoxObjectFor(end);
+	assertMouseEventOn('mousemove', 0, {}, 0, events[events.length-1]);
+}
