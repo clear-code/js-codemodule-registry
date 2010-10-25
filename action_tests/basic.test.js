@@ -23,6 +23,10 @@ function assertAtArgs(aMethod, aType, aButton, aX, aY, aModifiers, aArgs)
 	var events;
 	switch (aType)
 	{
+		case 'mousemove':
+			events = assertEventsCount(1);
+			assertMouseEventAt(aType, aButton, aX, aY, aModifiers, 0, events[events.length-1]);
+			break;
 		case 'mousedown':
 			events = assertEventsCount(1);
 			assertMouseEventAt(aType, aButton, aX, aY, aModifiers, 1, events[events.length-1]);
@@ -58,6 +62,10 @@ function assertOnArgs(aMethod, aType, aButton, aModifiers, aArgs)
 	var events;
 	switch (aType)
 	{
+		case 'mousemove':
+			events = assertEventsCount(1);
+			assertMouseEventOn(aType, aButton, aModifiers, 0, events[events.length-1]);
+			break;
 		case 'mousedown':
 			events = assertEventsCount(1);
 			assertMouseEventOn(aType, aButton, aModifiers, 1, events[events.length-1]);
@@ -98,7 +106,8 @@ test_mouseEventAt.parameters = [
 	{ type : 'click', method : 'rightClickAt', button : 2 },
 	{ type : 'dblclick', method : 'dblclickAt', button : 0 },
 	{ type : 'dblclick', method : 'middleDblclickAt', button : 1 },
-	{ type : 'dblclick', method : 'rightDblclickAt', button : 2 }
+	{ type : 'dblclick', method : 'rightDblclickAt', button : 2 },
+	{ type : 'mousemove', method : 'mouseMoveAt', button : 0 }
 ];
 function test_mouseEventAt(aParameter)
 {
@@ -143,7 +152,8 @@ test_mouseEventOn.parameters = [
 	{ type : 'click', method : 'rightClickOn', button : 2 },
 	{ type : 'dblclick', method : 'dblclickOn', button : 0 },
 	{ type : 'dblclick', method : 'middleDblclickOn', button : 1 },
-	{ type : 'dblclick', method : 'rightDblclickOn', button : 2 }
+	{ type : 'dblclick', method : 'rightDblclickOn', button : 2 },
+	{ type : 'mousemove', method : 'mouseMoveOn', button : 0 }
 ];
 function test_mouseEventOn(aParameter)
 {

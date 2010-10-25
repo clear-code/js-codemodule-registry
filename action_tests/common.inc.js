@@ -80,6 +80,8 @@ function generateMouseEventLog(aType, aButton, aScreenX, aScreenY, aModifiers, a
 		screenX  : aScreenX || 0,
 		screenY  : aScreenY || 0
 	};
+	if (aButton === void(0))
+		delete event.button;
 	if (aDetail !== void(0)) {
 		event.detail = aDetail;
 	}

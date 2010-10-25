@@ -135,6 +135,17 @@ function test_fireMouseEvent()
 	assertMouseEventAt('mouseup', 0, x, y, param, 2, events[events.length-3]);
 	assertMouseEventAt('click', 0, x, y, param, 2, events[events.length-2]);
 	assertMouseEventAt('dblclick', 0, x, y, param, 2, events[events.length-1]);
+
+	param = {
+		type     : 'mousemove',
+		ctrlKey  : true,
+		screenX  : boxObject.screenX+10,
+		screenY  : boxObject.screenY+10
+	};
+	[x, y] = [param.screenX, param.screenY];
+	actionModule.fireMouseEvent(content, param);
+	events = assertEventsCount(1);
+	assertMouseEventAt('mousemove', 0, x, y, param, 0, events[events.length-1]);
 }
 
 function test_fireMouseEventOnElement()
@@ -186,6 +197,14 @@ function test_fireMouseEventOnElement()
 	assertMouseEventOn('mouseup', 0, param, 2, events[events.length-3]);
 	assertMouseEventOn('click', 0, param, 2, events[events.length-2]);
 	assertMouseEventOn('dblclick', 0, param, 2, events[events.length-1]);
+
+	param = {
+		type     : 'mousemove',
+		ctrlKey  : true
+	}
+	actionModule.fireMouseEventOnElement(target, param);
+	events = assertEventsCount(1);
+	assertMouseEventOn('mousemove', 0, param, 0, events[events.length-1]);
 }
 
 

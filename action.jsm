@@ -524,6 +524,23 @@ var action;
 		/** @see action.rightMouseUpOn */
 		rightMouseupOn : function() { return this.rightMouseUpOn.apply(this, arguments); },
   
+// mousemove on element 
+	
+		/**
+		 * Emulates a mouse move on a element.
+		 * Options are just same to action.clickOn.
+		 *
+		 * @see action.clickOn
+		 * @see action.mousemoveOn (alias)
+		 */
+		mouseMoveOn : function()
+		{
+			var options = this._getMouseOptionsFor('mousemove', 0, arguments); 
+			this.fireMouseEventOnElement(options.element, options);
+		},
+		/** @see action.mouseMoveOn */
+		mousemoveOn : function() { return this.mouseMoveOn.apply(this, arguments); },
+  
 // click at position 
 	
 		/**
@@ -762,6 +779,23 @@ var action;
 		/** @see action.rightMouseUpAt */
 		rightMouseupAt : function() { return this.rightMouseUpAt.apply(this, arguments); },
   
+// mousemove at position 
+	
+		/**
+		 * Emulates a mouse move at the coordinates on the screen.
+		 * Options are just same to action.clickAt.
+		 *
+		 * @see action.clickAt
+		 * @see action.mousemoveAt (alias)
+		 */
+		mouseMoveAt : function()
+		{
+			var options = this._getMouseOptionsFor('mousemove', 0, arguments); 
+			this.fireMouseEvent(options.window, options);
+		},
+		/** @see action.mouseMoveAt */
+		mousemoveAt : function() { return this.mouseMoveAt.apply(this, arguments); },
+  
 // low level API 
 	
 		/**
@@ -840,6 +874,7 @@ var action;
 				switch (aOptions.type)
 				{
 					case 'mousemove':
+						detail = 0;
 					case 'mouseover':
 						utils.sendMouseEvent(aOptions.type, x, y, button, detail, flags);
 						break;
@@ -969,6 +1004,8 @@ var action;
 			var options, event;
 			switch (aOptions.type)
 			{
+				case 'mousemove':
+					detail = 0;
 				case 'mousedown':
 				case 'mouseup':
 					break;
@@ -1035,16 +1072,16 @@ var action;
 				('canBubble' in aOptions ? aOptions.canBubble : true ),
 				('cancelable' in aOptions ? aOptions.cancelable : true ),
 				aElement.ownerDocument.defaultView,
-				('detail' in aOptions ? aOptions.detail : 1),
+				('detail' in aOptions ? (aOptions.detail || 0) : 1),
 				aOptions.screenX,
 				aOptions.screenY,
 				aOptions.x,
 				aOptions.y,
-				('ctrlKey' in aOptions ? aOptions.ctrlKey : false ),
-				('altKey' in aOptions ? aOptions.altKey : false ),
-				('shiftKey' in aOptions ? aOptions.shiftKey : false ),
-				('metaKey' in aOptions ? aOptions.metaKey : false ),
-				('button' in aOptions ? aOptions.button : 0 ),
+				('ctrlKey' in aOptions ? (aOptions.ctrlKey || false) : false ),
+				('altKey' in aOptions ? (aOptions.altKey || false) : false ),
+				('shiftKey' in aOptions ? (aOptions.shiftKey || false) : false ),
+				('metaKey' in aOptions ? (aOptions.metaKey || false) : false ),
+				('button' in aOptions ? (aOptions.button || 0) : 0 ),
 				null
 			);
 			return event;

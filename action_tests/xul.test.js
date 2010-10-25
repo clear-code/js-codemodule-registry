@@ -151,6 +151,20 @@ function test_fireMouseEvent()
 		assertMouseEventAt('mousedown', 2, param.screenX, param.screenY, param, 1, events[events.length-3])
 		assertMouseEventAt('mouseup', 2, param.screenX, param.screenY, param, 1, events[events.length-2])
 		assertMouseEventAt('click', 2, param.screenX, param.screenY, param, 1, events[events.length-1])
+
+		if (aSetUpBeforeEvent)
+			yield Do(aSetUpBeforeEvent);
+
+		boxObject = utils.getBoxObjectFor(target);
+		param = {
+			type     : 'mousemove',
+			button   : 0,
+			screenX  : boxObject.screenX+10,
+			screenY  : boxObject.screenY+3
+		};
+		actionModule.fireMouseEvent(win, param);
+		events = assertEventsCount(1, win)
+		assertMouseEventAt('mousemove', 0, param.screenX, param.screenY, param, 0, events[events.length-1])
 	}
 
 	yield Do(assertMouseEventFire(assertFire));
@@ -207,6 +221,18 @@ function test_fireMouseEventOnElement()
 		assertMouseEventOn('mousedown', 2, param, 1, events[events.length-3]);
 		assertMouseEventOn('mouseup', 2, param, 1, events[events.length-2]);
 		assertMouseEventOn('click', 2, param, 1, events[events.length-1]);
+
+		if (aSetUpBeforeEvent)
+			yield Do(aSetUpBeforeEvent);
+
+		boxObject = utils.getBoxObjectFor(target);
+		param = {
+			type     : 'mousemove',
+			button   : 0
+		};
+		actionModule.fireMouseEventOnElement(target, param);
+		events = assertEventsCount(1, win)
+		assertMouseEventOn('mousemove', 0, param, 0, events[events.length-1]);
 	}
 
 	yield Do(assertMouseEventFire(assertFire));
