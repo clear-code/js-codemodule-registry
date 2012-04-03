@@ -5,8 +5,8 @@
  *
  * @license
  *   The MIT License, Copyright (c) 2011 ClearCode Inc.
- *   http://www.clear-code.com/repos/svn/js-codemodules/license.txt
- * @url http://www.clear-code.com/repos/svn/js-codemodules/resizableToolbarItem.js
+ *   https://github.com/clear-code/js-codemodules/blob/master/license.txt
+ * @url https://github.com/clear-code/js-codemodules/blob/master/resizableToolbarItem.js
  */
 
 if (typeof window == 'undefined')

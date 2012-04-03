@@ -5,9 +5,9 @@
  *
  * @license
  *   The MIT License, Copyright (c) 2010 ClearCode Inc.
- *   http://www.clear-code.com/repos/svn/js-codemodules/license.txt
- * @url http://www.clear-code.com/repos/svn/js-codemodules/ejs.jsm
- * @url http://www.clear-code.com/repos/svn/js-codemodules/ejs.test.js
+ *   https://github.com/clear-code/js-codemodules/blob/master/license.txt
+ * @url https://github.com/clear-code/js-codemodules/blob/master/ejs.jsm
+ * @url https://github.com/clear-code/js-codemodules/blob/master/ejs.test.js
  */
 
 if (typeof window == 'undefined' ||
@@ -17,7 +17,7 @@ if (typeof window == 'undefined' ||
 // var namespace;
 if (typeof namespace == 'undefined') {
 	// If namespace.jsm is available, export symbols to the shared namespace.
-	// See: http://www.cozmixng.org/repos/piro/fx3-compatibility-lib/trunk/namespace.jsm
+	// See: https://github.com/piroor/fxaddonlibs/blob/master/namespace.jsm
 	try {
 		let ns = {};
 		Components.utils.import('resource://my-modules/namespace.jsm', ns);
