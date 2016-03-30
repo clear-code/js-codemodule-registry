@@ -1,10 +1,10 @@
 /**
  * @fileOverview Windows Registry I/O Library for Firefox 3.5 or later
  * @author       ClearCode Inc.
- * @version      3
+ * @version      4
  *
  * @license
- *   The MIT License, Copyright (c) 2010 ClearCode Inc.
+ *   The MIT License, Copyright (c) 2010-2016 ClearCode Inc.
  * @url https://github.com/clear-code/js-codemodule-registry
  */
 
@@ -28,7 +28,7 @@ if (typeof namespace == 'undefined') {
 
 var registry;
 (function() {
-	const currentRevision = 3;
+	const currentRevision = 4;
 
 	var loadedRevision = 'registry' in namespace ?
 			namespace.registry.revision :
@@ -452,6 +452,33 @@ var registry;
 			}
 			catch(e) {
 			}
+		},
+
+		getChildren : function(aKey)
+		{
+			var children = [];
+
+			var root, path, name;
+			[root, path, name] = this._splitKey(aKey);
+			if (root < 0 || !path)
+				return children;
+
+			var regKey = Cc['@mozilla.org/windows-registry-key;1']
+							.createInstance(Ci.nsIWindowsRegKey);
+			try {
+				regKey.open(root, path + '\\' + name, Ci.nsIWindowsRegKey.ACCESS_READ);
+			}
+			catch(e) {
+				regKey.close();
+				return children;
+			}
+
+			for (var i = 0; i < regKey.childCount; i++) {
+				children.push(aKey + '\\' + regKey.getChildName(i));
+			}
+
+			regKey.close();
+			return children;
 		}
 	};
 
